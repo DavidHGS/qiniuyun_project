@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#wapper {
+    width: 100%;
+    height: 100%;
+    /* background-color: aquamarine; */
+    position: absolute;
+}
+
+#navbar {
+    border-radius: 0px;
+    margin: 0;
+}
+
+#main {
+    float: left;
+    background-color: white;
+    width: 100%;
+    height: 872px;
+}
+
+#left {
+    float: left;
+    width: 75%;
+    height: 100%;
+}
+
+#right {
+    float: right;
+    width: 25%;
+    height: 100%;
+}
+#item2{
+    margin: 0;
+}
+#right-tab-wapper{
+    height: 100%;
+    border-left: 3px dotted gray;
+}
+.nav-pills>li{
+    width: 50%;
+}
