@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         whiteboard.cpp \
-    graphicsscene.cpp
+    graphicsscene.cpp \
+    rectitem.cpp
 
 HEADERS += \
         whiteboard.h \
-    graphicsscene.h
+    graphicsscene.h \
+    rectitem.h
 
 FORMS += \
         whiteboard.ui

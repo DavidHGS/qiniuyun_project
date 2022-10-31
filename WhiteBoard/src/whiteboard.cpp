@@ -27,14 +27,17 @@ void WhiteBoard::init()
 void WhiteBoard::on_radioButton_rect_clicked()
 {
     _scene->setCurGraphicsType(GraphicsScene::GraphicsType::_Rect);
+    _scene->setMouseAction(GraphicsScene::MouseAction::_Draw);
 }
 
 void WhiteBoard::on_radioButton_circle_clicked()
 {
     _scene->setCurGraphicsType(GraphicsScene::GraphicsType::_Circle);
+    _scene->setMouseAction(GraphicsScene::MouseAction::_Draw);
 }
 
 void WhiteBoard::on_radioButton_clicked()
 {
     _scene->setCurGraphicsType(GraphicsScene::GraphicsType::_Hand);
+    _scene->setMouseAction(GraphicsScene::MouseAction::_Normal);
 }
