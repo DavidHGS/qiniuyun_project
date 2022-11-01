@@ -12,7 +12,6 @@ GraphicsScene::GraphicsScene()
 
 void GraphicsScene::init()
 {
-    qRegisterMetaType<Board::Attribute>("Board::Attribute&");
 }
 
 void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
@@ -93,10 +92,10 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
+            emit itemSelected(nullptr, Board::GraphicsType::_NoneType);
             QGraphicsScene::mousePressEvent(event);
         }
     }
-//    QGraphicsScene::mousePressEvent(event);
 }
 
 void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -134,9 +133,9 @@ void GraphicsScene::itemSelected()
     {
         RectItem *temp = dynamic_cast<RectItem*>(_curGraphicsItem);
         Board::Attribute attr = temp->getAttribute();
-        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
-                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
-                << attr._fillColor << ")";
-        emit updateAttributePanel(attr);
+//        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
+//                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
+//                << attr._fillColor << ")";
+        emit itemSelected(_curGraphicsItem, _graphicsItems[_curGraphicsItem]);
     }
 }

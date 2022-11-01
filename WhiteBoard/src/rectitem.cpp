@@ -134,7 +134,10 @@ void RectItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             return;
         }
     }
-    QGraphicsRectItem::mouseMoveEvent(event);
+    if(this->isSelected())
+    {
+        QGraphicsRectItem::mouseMoveEvent(event);
+    }
 }
 
 void RectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -144,7 +147,6 @@ void RectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //        qDebug() << "RectItem INFO: is selected ";
         emit selected();
     }
-//    QGraphicsRectItem::mouseMoveEvent(event);
 }
 
 void RectItem::setRect(const QRectF &rect)

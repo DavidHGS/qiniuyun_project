@@ -18,16 +18,28 @@ private slots:
     void on_radioButton_rect_clicked();    
     void on_radioButton_circle_clicked();   
     void on_radioButton_choose_clicked();
-    void updateAttributePanel(Board::Attribute &attr);
+    void on_spinBox_lineWidth_valueChanged(int arg1);
+    void on_comboBox_lineType_currentIndexChanged(int index);
+    void on_pushButton_boundingColor_clicked();
+    void on_pushButton_fillColor_clicked();
+    void itemSelected(QGraphicsItem* item, Board::GraphicsType type);
+
 private:
     void init();
+    void setPanelEditable(bool isEditable);
+    void updateAttributePanel(Board::Attribute &attr);
+    void updateItemAttribute(Board::Attribute &attr);
+
 public:
     explicit WhiteBoard(QWidget *parent = 0);
     ~WhiteBoard();
 
 private:
-    Ui::WhiteBoard *ui = nullptr;
-    GraphicsScene * _scene = nullptr;
+    Ui::WhiteBoard *ui;
+    GraphicsScene * _scene;
+    QGraphicsItem* _curItem;
+    Board::GraphicsType _curItemType;
+    Board::Attribute _curAttribute;
 };
 
 #endif // WHITEBOARD_H

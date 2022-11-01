@@ -91,6 +91,9 @@
                </item>
                <item>
                 <widget class="QSpinBox" name="spinBox_lineWidth">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="suffix">
                   <string> px</string>
                  </property>
@@ -112,6 +115,9 @@
                </item>
                <item>
                 <widget class="QComboBox" name="comboBox_lineType">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <item>
                   <property name="text">
                    <string>实线</string>
@@ -137,6 +143,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="pushButton_boundingColor">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(0, 0, 0);</string>
                  </property>
@@ -158,6 +167,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="pushButton_fillColor">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(255, 255, 255);</string>
                  </property>
@@ -300,7 +312,7 @@
      <x>0</x>
      <y>0</y>
      <width>983</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

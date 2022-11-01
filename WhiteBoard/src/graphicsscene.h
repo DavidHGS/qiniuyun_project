@@ -12,6 +12,7 @@ class GraphicsScene : public QGraphicsScene
 
 signals:
     void updateAttributePanel(Board::Attribute&);
+    void itemSelected(QGraphicsItem*, Board::GraphicsType);
 private slots:
     void itemSelected();
 public:
