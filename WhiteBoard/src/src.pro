@@ -32,7 +32,8 @@ SOURCES += \
 HEADERS += \
         whiteboard.h \
     graphicsscene.h \
-    rectitem.h
+    rectitem.h \
+    define.h
 
 FORMS += \
         whiteboard.ui

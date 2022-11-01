@@ -18,7 +18,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_8">
       <item>
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="radioButton_choose">
         <property name="text">
          <string>手</string>
         </property>
@@ -90,17 +90,13 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_lineWidth">
-                 <item>
-                  <property name="text">
-                   <string>1px</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2px</string>
-                  </property>
-                 </item>
+                <widget class="QSpinBox" name="spinBox_lineWidth">
+                 <property name="suffix">
+                  <string> px</string>
+                 </property>
+                 <property name="maximum">
+                  <number>10</number>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -115,7 +111,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox">
+                <widget class="QComboBox" name="comboBox_lineType">
                  <item>
                   <property name="text">
                    <string>实线</string>
@@ -140,7 +136,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_lineColor">
+                <widget class="QPushButton" name="pushButton_boundingColor">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(0, 0, 0);</string>
                  </property>
@@ -161,7 +157,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_3">
+                <widget class="QPushButton" name="pushButton_fillColor">
                  <property name="styleSheet">
                   <string notr="true">background-color: rgb(255, 255, 255);</string>
                  </property>
@@ -202,7 +198,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_3">
+                <widget class="QComboBox" name="comboBox_fontType">
                  <item>
                   <property name="text">
                    <string>微软雅黑</string>
@@ -227,7 +223,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_2">
+                <widget class="QComboBox" name="comboBox_fontSizze">
                  <item>
                   <property name="text">
                    <string>1px</string>
@@ -304,7 +300,7 @@
      <x>0</x>
      <y>0</y>
      <width>983</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -358,12 +354,11 @@
  <tabstops>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_2</tabstop>
-  <tabstop>comboBox_lineWidth</tabstop>
-  <tabstop>comboBox</tabstop>
-  <tabstop>pushButton_lineColor</tabstop>
-  <tabstop>pushButton_3</tabstop>
+  <tabstop>comboBox_lineType</tabstop>
+  <tabstop>pushButton_boundingColor</tabstop>
+  <tabstop>pushButton_fillColor</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>comboBox_2</tabstop>
+  <tabstop>comboBox_fontSizze</tabstop>
  </tabstops>
  <resources>
   <include location="resource.qrc"/>

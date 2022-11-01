@@ -1,39 +1,36 @@
 #ifndef GRAPHICSSCENE_H
 #define GRAPHICSSCENE_H
 
+#include "rectitem.h"
+#include "define.h"
 #include <QObject>
 #include <QGraphicsScene>
 
 class GraphicsScene : public QGraphicsScene
 {
+    Q_OBJECT
+
+signals:
+    void updateAttributePanel(Board::Attribute&);
+private slots:
+    void itemSelected();
 public:
-    enum GraphicsType
-    {
-        _Hand = -1,
-        _Rect,
-        _Circle,
-        _Text
-    };
-    enum MouseAction
-    {
-        _Normal = 0,
-        _Draw
-    };
-
     GraphicsScene();
+    void setCurGraphicsType(Board::GraphicsType type);
+    void setMouseAction(Board::MouseAction mouseAction);
+protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void setCurGraphicsType(GraphicsType type);
-    void setMouseAction(MouseAction mouseAction);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);  
 private:
-    void createItem(GraphicsType type, QPointF itemPos);
-    void drawItem(QGraphicsItem *item, GraphicsType type, QPointF mouseCurPos);
+    void init();
+    void createItem(Board::GraphicsType type, QPointF itemPos);
+    void drawItem(QGraphicsItem *item, Board::GraphicsType type, QPointF mouseCurPos);
 
 private:
-    std::vector<QGraphicsItem*> _graphicsItems;
-    GraphicsType _curGraphicsType;
+    std::map<QGraphicsItem*, Board::GraphicsType> _graphicsItems;
     QGraphicsItem* _curGraphicsItem;
-    MouseAction _mouseAction;
+    Board::GraphicsType _curGraphicsType;
+    Board::MouseAction _mouseAction;
     QPointF _mouseStartPos;
 };
 

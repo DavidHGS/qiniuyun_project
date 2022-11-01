@@ -1,40 +1,37 @@
 #ifndef RECTITEM_H
 #define RECTITEM_H
-
+#include "define.h"
 #include <QObject>
 #include <QGraphicsItem>
 #include <map>
 
-class RectItem : public QGraphicsRectItem
+class RectItem : public QObject, public QGraphicsRectItem
 {
-    enum MouseHandlePos
-    {
-        _None = -1,
-        _TopLeft,
-        _TopMiddle,
-        _TopRight,
-        _LeftMiddle,
-        _RightMiddle,
-        _BottomLeft,
-        _BottomMiddle,
-        _BottomRight
-    };
+    Q_OBJECT
+signals:
+    void selected();
 public:
-    RectItem();
-    void setRect(const QRectF &rect);
+    explicit RectItem();
+    void setRect(const QRectF &rect);//绘制矩形
+    void setAttribute(Board::Attribute attr);//设置图形属性
+    Board::Attribute getAttribute();//返回图形属性
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private:
+    void init();
     void updateHandleArea();
-    MouseHandlePos getHandleArea(QPointF mousePos);
-    void adjustRectSize(QPointF mousePos, MouseHandlePos curHandle);
+    Board::MouseHandlePos getHandleArea(QPointF mousePos);
+    void adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle);
 
 private:
+    Board::Attribute _attribute;
     QSizeF _handleAreasize;
-    std::map<MouseHandlePos, QRectF> _handleArea;
-    MouseHandlePos _curHandle;
+    std::map<Board::MouseHandlePos, QRectF> _handleArea;
+    Board::MouseHandlePos _curHandle;
 };
 
 #endif // RECTITEM_H
