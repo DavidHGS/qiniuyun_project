@@ -27,7 +27,7 @@ private slots:
 private:
     void init();
     void setPanelEditable(bool isEditable);
-    void updateAttributePanel(Board::Attribute &attr);
+    void updateAttributePanel(Board::Attribute &attr, Board::GraphicsType type);
     void updateItemAttribute(Board::Attribute &attr);
 
 public:

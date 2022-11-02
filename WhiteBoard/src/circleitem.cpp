@@ -1,4 +1,4 @@
-#include "rectitem.h"
+#include "circleitem.h"
 #include <QGraphicsSceneHoverEvent>
 #include <QRect>
 #include <QCursor>
@@ -8,17 +8,17 @@
 #include <QStyleOptionGraphicsItem>
 #include <QDebug>
 
-RectItem::RectItem(QObject *parent) : QObject(parent)
+CircleItem::CircleItem(QObject *parent) : QObject(parent)
 {
-   init();
+    init();
 }
 
-RectItem::~RectItem()
+CircleItem::~CircleItem()
 {
 
 }
 
-void RectItem::init()
+void CircleItem::init()
 {
     _handleAreasize = QSizeF(20.0, 20.0);
     updateHandleArea();
@@ -26,45 +26,44 @@ void RectItem::init()
     this->setAcceptHoverEvents(true);
 }
 
-void RectItem::updateHandleArea()
-{
-//    qDebug() << "RectItem INFO: updateHandleArea ";
-    QRectF rect = this->boundingRect();
-//    qDebug() << "RectItem INFO: rect size" << rect;
-    _handleArea[Board::MouseHandlePos::_TopLeft] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
-    _handleArea[Board::MouseHandlePos::_TopMiddle] = QRectF(QPointF(rect.center().x() - rect.width() / 6, rect.top() - _handleAreasize.height() / 2), QSizeF(rect.width() / 3, _handleAreasize.height()));
-    _handleArea[Board::MouseHandlePos::_TopRight] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
-    _handleArea[Board::MouseHandlePos::_LeftMiddle] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.center().y() - rect.height() / 6), QSizeF(_handleAreasize.width(), rect.height() / 3));
-    _handleArea[Board::MouseHandlePos::_RightMiddle] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.center().y() - rect.height() / 6), QSizeF(_handleAreasize.width(), rect.height() / 3));
-    _handleArea[Board::MouseHandlePos::_BottomLeft] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.bottom() - _handleAreasize.height() / 2), _handleAreasize);
-    _handleArea[Board::MouseHandlePos::_BottomMiddle] = QRectF(QPointF(rect.center().x() - rect.width() / 6, rect.bottom() - _handleAreasize.height() / 2), QSizeF(rect.width() / 3, _handleAreasize.height()));
-    _handleArea[Board::MouseHandlePos::_BottomRight] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.bottom() - _handleAreasize.height() / 2), _handleAreasize);
 
+void CircleItem::setRect(const QRectF &rect)
+{
+    QGraphicsEllipseItem::setRect(rect);
+    setAttribute(_attribute);
+    updateHandleArea();
 }
 
-Board::MouseHandlePos RectItem::getHandleArea(QPointF mousePos)
+void CircleItem::setAttribute(Board::Attribute attr)
 {
-    if(this->isSelected())
-    {
-        for(auto it : _handleArea)
-        {
-            if(it.second.contains(mousePos))
-            {
-                return it.first;
-            }
-        }
-    }
-    return Board::MouseHandlePos::_NoneHandle;
+    _attribute._boundingColor = attr._boundingColor;
+    _attribute._boundingLineType = attr._boundingLineType;
+    _attribute._boundingLineWidth = attr._boundingLineWidth;
+    _attribute._fillColor = attr._fillColor;
+    QPen pen = this->pen();
+    pen.setWidth(_attribute._boundingLineWidth);
+    pen.setColor(_attribute._boundingColor);
+    pen.setStyle(_attribute._boundingLineType);
+    this->setPen(pen);
+    QBrush brush(_attribute._fillColor);
+    this->setBrush(brush);
+    this->update();
 }
 
-void RectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+Board::Attribute CircleItem::getAttribute()
 {
+    return _attribute;
+}
+
+void CircleItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+//    qDebug() << "CircleItem INFO: hoverEnterEvent ";
     if(this->isSelected())
     {
         QPointF mouseCurPos = event->pos();
         Board::MouseHandlePos mouseHandle = getHandleArea(mouseCurPos);
         _curHandle = mouseHandle;
-//        qDebug() << "RectItem INFO: mouseHandle " << mouseHandle;
+//        qDebug() << "CircleItem INFO: hoverEnterEvent ";
         if(mouseHandle == Board::MouseHandlePos::_TopMiddle || mouseHandle == Board::MouseHandlePos::_BottomMiddle)
         {
             this->setCursor(Qt::SizeVerCursor);
@@ -90,22 +89,23 @@ void RectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     {
         this->setCursor(Qt::SizeAllCursor);
     }
-    QGraphicsRectItem::hoverEnterEvent(event);
+    QGraphicsEllipseItem::hoverEnterEvent(event);
 }
 
-void RectItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void CircleItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     _curHandle = Board::MouseHandlePos::_NoneHandle;
     this->setCursor(Qt::ArrowCursor);
-    QGraphicsRectItem::hoverLeaveEvent(event);
+//    qDebug() << "CircleItem INFO: hoverLeaveEvent ";
+    QGraphicsEllipseItem::hoverLeaveEvent(event);
 }
 
-void RectItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+void CircleItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     QPointF mouseCurPos = event->pos();
     Board::MouseHandlePos mouseHandle = getHandleArea(mouseCurPos);
     _curHandle = mouseHandle;
-//    qDebug() << "RectItem INFO: current handle " << _curHandle;
+//    qDebug() << "CircleItem INFO: current handle " << _curHandle;
     if(mouseHandle == Board::MouseHandlePos::_TopMiddle || mouseHandle == Board::MouseHandlePos::_BottomMiddle)
     {
         this->setCursor(Qt::SizeVerCursor);
@@ -128,9 +128,9 @@ void RectItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     }
 }
 
-void RectItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void CircleItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-//    qDebug() << "RectItem INFO: current handle " << _curHandle;
+//    qDebug() << "CircleItem INFO: mouseMoveEvent ";
     if(event->buttons() & Qt::LeftButton)
     {
         if(_curHandle != Board::MouseHandlePos::_NoneHandle)
@@ -141,27 +141,51 @@ void RectItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     if(this->isSelected())
     {
-        QGraphicsRectItem::mouseMoveEvent(event);
+        QGraphicsEllipseItem::mouseMoveEvent(event);
     }
 }
 
-void RectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void CircleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
-//        qDebug() << "RectItem INFO: is selected ";
+        qDebug() << "CircleItem INFO: is selected ";
         emit selected();
     }
 }
 
-void RectItem::setRect(const QRectF &rect)
+void CircleItem::updateHandleArea()
 {
-    QGraphicsRectItem::setRect(rect);
-    setAttribute(_attribute);
-    updateHandleArea();
+//    qDebug() << "RectItem INFO: updateHandleArea ";
+    QRectF rect = this->boundingRect();
+//    qDebug() << "RectItem INFO: rect size" << rect;
+    _handleArea[Board::MouseHandlePos::_TopLeft] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
+    _handleArea[Board::MouseHandlePos::_TopMiddle] = QRectF(QPointF(rect.center().x() - rect.width() / 6, rect.top() - _handleAreasize.height() / 2), QSizeF(rect.width() / 3, _handleAreasize.height()));
+    _handleArea[Board::MouseHandlePos::_TopRight] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
+    _handleArea[Board::MouseHandlePos::_LeftMiddle] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.center().y() - rect.height() / 6), QSizeF(_handleAreasize.width(), rect.height() / 3));
+    _handleArea[Board::MouseHandlePos::_RightMiddle] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.center().y() - rect.height() / 6), QSizeF(_handleAreasize.width(), rect.height() / 3));
+    _handleArea[Board::MouseHandlePos::_BottomLeft] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.bottom() - _handleAreasize.height() / 2), _handleAreasize);
+    _handleArea[Board::MouseHandlePos::_BottomMiddle] = QRectF(QPointF(rect.center().x() - rect.width() / 6, rect.bottom() - _handleAreasize.height() / 2), QSizeF(rect.width() / 3, _handleAreasize.height()));
+    _handleArea[Board::MouseHandlePos::_BottomRight] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.bottom() - _handleAreasize.height() / 2), _handleAreasize);
+
 }
 
-void RectItem::adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle)
+Board::MouseHandlePos CircleItem::getHandleArea(QPointF mousePos)
+{
+    if(this->isSelected())
+    {
+        for(auto it : _handleArea)
+        {
+            if(it.second.contains(mousePos))
+            {
+                return it.first;
+            }
+        }
+    }
+    return Board::MouseHandlePos::_NoneHandle;
+}
+
+void CircleItem::adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle)
 {
     if(curHandle == Board::MouseHandlePos::_NoneHandle)
     {
@@ -210,25 +234,4 @@ void RectItem::adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle)
     {
         setRect(QRectF(topLeft, bottomRight));
     }
-}
-
-void RectItem::setAttribute(Board::Attribute attr)
-{
-    _attribute._boundingColor = attr._boundingColor;
-    _attribute._boundingLineType = attr._boundingLineType;
-    _attribute._boundingLineWidth = attr._boundingLineWidth;
-    _attribute._fillColor = attr._fillColor;
-    QPen pen = this->pen();
-    pen.setWidth(_attribute._boundingLineWidth);
-    pen.setColor(_attribute._boundingColor);
-    pen.setStyle(_attribute._boundingLineType);
-    this->setPen(pen);
-    QBrush brush(_attribute._fillColor);
-    this->setBrush(brush);
-    this->update();
-}
-
-Board::Attribute RectItem::getAttribute()
-{
-    return _attribute;
 }

@@ -46,30 +46,33 @@ void WhiteBoard::on_radioButton_choose_clicked()
     _scene->setMouseAction(Board::MouseAction::_Normal);
 }
 
-void WhiteBoard::updateAttributePanel(Board::Attribute &attr)
+void WhiteBoard::updateAttributePanel(Board::Attribute &attr, Board::GraphicsType type)
 {
 //    qDebug() << "WhiteBoard INFO : update panel, attribute(" << attr._boundingColor
 //             <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
 //            << attr._fillColor << ")";
-    QColor boundingColor = attr._boundingColor;
-    ui->pushButton_boundingColor->setStyleSheet(QString("background-color: rgb(%1, %2, %3)")
-                                                .arg(boundingColor.red()).arg(boundingColor.green()).arg(boundingColor.blue()));
-    QColor fillColor = attr._fillColor;
-    ui->pushButton_fillColor->setStyleSheet(QString("background-color: rgb(%1, %2, %3)")
-                                            .arg(fillColor.red()).arg(fillColor.green()).arg(fillColor.blue()));
-    int lineWidth = attr._boundingLineWidth;
-    ui->spinBox_lineWidth->setValue(lineWidth);
-    Qt::PenStyle lineType = attr._boundingLineType;
-    int lineTypeIndex = 0;
-    if(lineType == Qt::PenStyle::SolidLine)
+    if(Board::GraphicsType::_Text != type)
     {
-        lineTypeIndex = 0;
+        QColor boundingColor = attr._boundingColor;
+        ui->pushButton_boundingColor->setStyleSheet(QString("background-color: rgb(%1, %2, %3)")
+                                                    .arg(boundingColor.red()).arg(boundingColor.green()).arg(boundingColor.blue()));
+        QColor fillColor = attr._fillColor;
+        ui->pushButton_fillColor->setStyleSheet(QString("background-color: rgb(%1, %2, %3)")
+                                                .arg(fillColor.red()).arg(fillColor.green()).arg(fillColor.blue()));
+        int lineWidth = attr._boundingLineWidth;
+        ui->spinBox_lineWidth->setValue(lineWidth);
+        Qt::PenStyle lineType = attr._boundingLineType;
+        int lineTypeIndex = 0;
+        if(lineType == Qt::PenStyle::SolidLine)
+        {
+            lineTypeIndex = 0;
+        }
+        if(lineType == Qt::PenStyle::DashLine)
+        {
+            lineTypeIndex = 1;
+        }
+        ui->comboBox_lineType->setCurrentIndex(lineTypeIndex);
     }
-    if(lineType == Qt::PenStyle::DashLine)
-    {
-        lineTypeIndex = 1;
-    }
-    ui->comboBox_lineType->setCurrentIndex(lineTypeIndex);
 }
 
 void WhiteBoard::on_spinBox_lineWidth_valueChanged(int arg1)
@@ -115,12 +118,19 @@ void WhiteBoard::itemSelected(QGraphicsItem *item, Board::GraphicsType type)
     _curItemType = type;
     if(_curItem != nullptr)
     {
-        setPanelEditable(true);
         if(type == Board::_Rect)
         {
+            setPanelEditable(true);
             RectItem *temp = dynamic_cast<RectItem*>(_curItem);
             _curAttribute = temp->getAttribute();
-            updateAttributePanel(_curAttribute);
+            updateAttributePanel(_curAttribute, Board::GraphicsType::_Rect);
+        }
+        else if(type == Board::_Circle)
+        {
+            setPanelEditable(true);
+            CircleItem *temp = dynamic_cast<CircleItem*>(_curItem);
+            _curAttribute = temp->getAttribute();
+            updateAttributePanel(_curAttribute, Board::GraphicsType::_Circle);
         }
     }
     else
@@ -144,6 +154,11 @@ void WhiteBoard::updateItemAttribute(Board::Attribute &attr)
         if(_curItemType == Board::_Rect)
         {
             RectItem *temp = dynamic_cast<RectItem*>(_curItem);
+            temp->setAttribute(attr);
+        }
+        else if(_curItemType == Board::_Circle)
+        {
+            CircleItem *temp = dynamic_cast<CircleItem*>(_curItem);
             temp->setAttribute(attr);
         }
     }

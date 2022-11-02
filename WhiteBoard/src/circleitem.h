@@ -1,16 +1,17 @@
-#ifndef RECTITEM_H
-#define RECTITEM_H
+#ifndef CIRCLEITEM_H
+#define CIRCLEITEM_H
+
 #include "define.h"
 #include <QObject>
 #include <QGraphicsItem>
 #include <map>
 
-class RectItem : public QObject, public QGraphicsRectItem
+class CircleItem : public QObject, public QGraphicsEllipseItem
 {
     Q_OBJECT
 public:
-    explicit RectItem(QObject *parent = nullptr);
-    ~RectItem();
+    explicit CircleItem(QObject *parent = nullptr);
+    ~CircleItem();
     void setRect(const QRectF &rect);//绘制矩形
     void setAttribute(Board::Attribute attr);//设置图形属性
     Board::Attribute getAttribute();//返回图形属性
@@ -34,4 +35,4 @@ private:
     Board::MouseHandlePos _curHandle;
 };
 
-#endif // RECTITEM_H
+#endif // CIRCLEITEM_H

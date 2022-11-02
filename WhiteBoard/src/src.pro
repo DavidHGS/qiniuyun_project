@@ -27,13 +27,15 @@ SOURCES += \
         main.cpp \
         whiteboard.cpp \
     graphicsscene.cpp \
-    rectitem.cpp
+    rectitem.cpp \
+    circleitem.cpp
 
 HEADERS += \
         whiteboard.h \
     graphicsscene.h \
     rectitem.h \
-    define.h
+    define.h \
+    circleitem.h
 
 FORMS += \
         whiteboard.ui

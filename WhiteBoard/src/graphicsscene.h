@@ -1,8 +1,9 @@
 #ifndef GRAPHICSSCENE_H
 #define GRAPHICSSCENE_H
 
-#include "rectitem.h"
 #include "define.h"
+#include "rectitem.h"
+#include "circleitem.h"
 #include <QObject>
 #include <QGraphicsScene>
 

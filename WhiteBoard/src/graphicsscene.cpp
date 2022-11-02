@@ -31,11 +31,13 @@ void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
     }
     if(Board::GraphicsType::_Circle == type)
     {
-        _curGraphicsItem = new QGraphicsEllipseItem();
+        CircleItem *temp = new CircleItem;
+        _curGraphicsItem = temp;
         _curGraphicsItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
         this->addItem(_curGraphicsItem);
         _graphicsItems[_curGraphicsItem] = Board::GraphicsType::_Circle;
         _curGraphicsItem->setPos(itemPos);
+        connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
     }
 }
 
@@ -74,9 +76,10 @@ void GraphicsScene::drawItem(QGraphicsItem *item, Board::GraphicsType type, QPoi
         }
         if(Board::GraphicsType::_Circle == type)
         {
-            QGraphicsEllipseItem *circleItem = dynamic_cast<QGraphicsEllipseItem *>(item);
-            circleItem->setRect(circleItem->rect().x(), circleItem->rect().y(),
-                                mouseCurPos.x() -  _mouseStartPos.x(), mouseCurPos.x() -  _mouseStartPos.x());
+            CircleItem *circleItem = dynamic_cast<CircleItem *>(item);
+            circleItem->setRect(QRect(circleItem->rect().x(), circleItem->rect().y(),
+                                mouseCurPos.x() -  _mouseStartPos.x(), mouseCurPos.x() -  _mouseStartPos.x()));
+            emit circleItem->selected();
         }
 }
 
@@ -103,7 +106,7 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if(event->buttons() & Qt::LeftButton)
     {
         QPointF mouseCurPos = event->scenePos();
-//        qDebug() << "GraphicsScene INFO: mouse current pos " <<mouseCurPos;
+        qDebug() << "GraphicsScene INFO: mouse current pos " <<mouseCurPos;
         if(_mouseAction == Board::_Draw)
         {
             drawItem(_curGraphicsItem, _curGraphicsType, mouseCurPos);
@@ -128,11 +131,21 @@ void GraphicsScene::setMouseAction(Board::MouseAction mouseAction)
 
 void GraphicsScene::itemSelected()
 {
-    _curGraphicsItem = dynamic_cast<RectItem*>(sender());
+//    qDebug() << "GraphicsScene INFO: itemSelected";
+    _curGraphicsItem = dynamic_cast<QGraphicsItem*>(sender());
     if(_graphicsItems[_curGraphicsItem] == Board::GraphicsType::_Rect)
     {
         RectItem *temp = dynamic_cast<RectItem*>(_curGraphicsItem);
-        Board::Attribute attr = temp->getAttribute();
+//        Board::Attribute attr = temp->getAttribute();
+//        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
+//                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
+//                << attr._fillColor << ")";
+        emit itemSelected(_curGraphicsItem, _graphicsItems[_curGraphicsItem]);
+    }
+    else if(_graphicsItems[_curGraphicsItem] == Board::GraphicsType::_Circle)
+    {
+        CircleItem *temp = dynamic_cast<CircleItem*>(_curGraphicsItem);
+//        Board::Attribute attr = temp->getAttribute();
 //        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
 //                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
 //                << attr._fillColor << ")";
