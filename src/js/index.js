@@ -24,7 +24,6 @@ $(function () {
 
 
 $(document).ready(function () {
-
     //公用 const
     var posX = 500
     var posY = 500
@@ -43,7 +42,7 @@ $(document).ready(function () {
     var rectCnt = 0
     //是否正在移动
     var circleMoving = false
-
+    var rectMoving = false
     //当前选中对象
     var $currObj = null
     if ($currObj != null) {
@@ -54,10 +53,11 @@ $(document).ready(function () {
     }
     $drawCir = $("#circle")//nav 点击按钮
     $drawRect = $("#rect")//nav 点击按钮
+    /***************************************************矩形****************************************************** */
     $drawRect.click(function (event) {//click事件创建矩形
         rectCnt = rectCnt + 1
         var rectname = 'rect_' + rectCnt
-        $rect = $('<div class="rect"></div>');
+        $rect = $('<div class="rect"></span></div>');
         $rect.attr('id', rectname);
         $draw.append($rect);
         var width = 200, height = 100
@@ -80,39 +80,104 @@ $(document).ready(function () {
         })
         console.log($currObj)
         $("#" + rectname).mousedown(function (event) {
+            rectMoving = true
             deltax = event.clientX - $(this).offset().left //鼠标距离上半弧的距离
             deltay = event.clientY - $(this).offset().top   //鼠标距离左半弧的距离
             $(document).bind('mousemove', function (event) {
-                x = event.clientX - deltax//距离左边的位置
-                y = event.clientY - deltay//距离上边的位置
-                centerX = x + width / 2
-                centerY = y + height / 2
-                console.log(centerX + "++++++++++++++" + centerY)
-                if (x < 0) {
-                    x = 0
+                event.preventDefault()
+                event.stopPropagation()
+                if (rectMoving) {
+                    x = event.clientX - deltax//距离左边的位置
+                    y = event.clientY - deltay//距离上边的位置
+                    centerX = x + width / 2
+                    centerY = y + height / 2
+                    if (x < 0) {
+                        x = 0
+                    }
+                    if (x > ($draw.width() - width)) {
+                        x = $draw.width() - width
+                    }
+                    if (y < $("#navbar").height()) {
+                        y = $("#navbar").height()
+                    }
+                    if (y > ($draw.height() - height + $("#navbar").height())) {
+                        y = $draw.height() - height + $("#navbar").height()
+                    }
+                    $("#" + rectname).css({ 'left': x + 'px', 'top': y + 'px' })
                 }
-                if (x > ($draw.width() - width)) {
-                    x = $draw.width() - width
-                }
-                if (y < $("#navbar").height()) {
-                    y = $("#navbar").height()
-                }
-                if (y > ($draw.height() - height + $("#navbar").height())) {
-                    y = $draw.height() - height + $("#navbar").height()
-                }
-                console.log(x, y)
-                $("#" + rectname).css({ 'left': x + 'px', 'top': y + 'px' })
-                return false
             })
             $(document).bind('mouseup', function (event) {
-                $(this).unbind('mousemove')
-                $(this).unbind('mouseup')
+                rectMoving = false
             })
-            return false
-        })
-        
-    })
+            var pointA = {//中心点坐标
+                X: $("#" + rectname).width() / 2 + $("#" + rectname).offset().left,
+                Y: $("#" + rectname).height() / 2 + $("#" + rectname).offset().top
+            }
+            
+            console.log(pointA)
+            var pointB = {}//起始点坐标
+            var pointC = {}//结束点坐标
+            //鼠标获取起始点和结束点
+            var typeMouse = false
 
+            var allA = 0//存放鼠标旋转总度数
+            var count = 0
+            //元素跟着鼠标移动旋转
+            $("#" + rectname).mousedown(function (event) {
+                event.preventDefault()
+                event.stopPropagation()
+                $point = $('<div id="point" style="width:10px; height:10px;background-color: red;display:flex">123123123</div>');
+                $draw.append($point);
+                $point.css({ 'left': pointA.X + 'px', 'top': pointA.Y + 'px' })
+                typeMouse = true
+                if (count < 1) {//以鼠标第一次落下的点为起点
+                    pointB.X = event.pageX
+                    pointB.Y = event.pageY
+                    count++
+                }
+                $(document).on("mousemove", function (e) {
+                    e.preventDefault()
+                    if (typeMouse) {
+                        pointC.X = e.pageX
+                        pointC.Y = e.pageY//获取结束点坐标
+                        // 计算出旋转角度
+                        var AB = {}
+                        var AC = {}
+                        console.log(5, pointA, pointB, pointC)
+                        AB.X = (pointB.X - pointA.X)
+                        AB.Y = (pointB.Y - pointA.Y)
+                        AC.X = (pointC.X - pointA.X)
+                        AC.Y = (pointC.Y - pointA.Y)//分别求出AB，AC的向量坐标表示
+                        console.log("4535", AB.X, AB.Y, AC.X, AC.Y)
+                        var direct = (AB.X * AC.Y) - (AB.Y * AC.X)//AB，AC的向量坐标显示
+                        var lengthAB = Math.sqrt(Math.pow(pointA.X - pointB.X, 2) +
+                            Math.pow(pointA.Y - pointB.Y, 2)),
+                            lengthAC = Math.sqrt(Math.pow(pointA.X - pointC.X, 2) +
+                                Math.pow(pointA.Y - pointC.Y, 2)),
+                            lengthBC = Math.sqrt(Math.pow(pointB.X - pointC.X, 2) +
+                                Math.pow(pointB.Y - pointC.Y, 2));
+                        var cosA = (Math.pow(lengthAB, 2) + Math.pow(lengthAC, 2) - Math.pow(lengthBC, 2)) /
+                            (2 * lengthAB * lengthAC);
+                        var angleA = Math.round(Math.acos(cosA) * 180 / Math.PI)
+                        console.log("angleA" + angleA)
+                        if (direct < 0) {
+                            allA = -angleA//叉乘结果为负表示逆时针旋转 逆时针旋转减度数
+                        } else {
+                            allA = angleA//叉乘结果为正表示顺时针旋转 顺时针旋转加度数
+                        }
+                        console.log("---" + allA)
+                        $("#" + rectname).css('transform', 'rotate(' + allA + 'deg)')
+                    }
+                })
+                $(document).on("mouseup", function (e) {
+                    typeMouse = false
+                    $point.remove()
+                })
+            })
+
+        })
+    })
+    /***************************************************圆****************************************************** */
     $drawCir.click(function (event) {//click事件创建圆
         circleCnt = circleCnt + 1
         var circlename = 'circle_' + circleCnt
@@ -137,59 +202,94 @@ $(document).ready(function () {
             $("#xianse").val("" + $(this).css("border-color"))
             $("tianchongse").val("" + $(this).css("background-color"))
         })
-
-        //按下鼠标开始画圆
-        // $("#"+circlename).on("mousedown",function(event){
-        //     centerX=event.pageX-$draw.offset().left;//相对于画图面板的距离
-        //     centerY=event.pageY-$draw.offset().top;
-        //     circleMoving=true;
-        //     event.preventDefault();
-        // })
-        // //鼠标移动事件
-        // $("#"+circlename).on("mousemove",function(){
-
-
-        // })
-        // //释放鼠标事件 
-        // $("#"+circlename).on("mouseup",function(event){
-        //     if(circleMoving){
-        //         $("#"+circlename).css("left",event.pageX-$draw.offset().left)
-        //         $("#"+circlename).css("top",event.pageY-$draw.offset().top)
-        //     }
-        //     circleMoving=false
-        // })
         $("#" + circlename).mousedown(function (event) {
             deltax = event.clientX - $(this).offset().left //鼠标距离上半弧的距离
             deltay = event.clientY - $(this).offset().top   //鼠标距离左半弧的距离
+            circleMoving = true
             $(document).bind('mousemove', function (event) {
-                x = event.clientX - deltax//距离左边的位置
-                y = event.clientY - deltay//距离上边的位置
-                centerX = x + radius
-                centerY = y + radius
-                console.log(centerX + "++++++++++++++" + centerY)
-                if (x < 0) {
-                    x = 0
+                if (circleMoving) {
+                    x = event.clientX - deltax//距离左边的位置
+                    y = event.clientY - deltay//距离上边的位置
+                    centerX = x + radius
+                    centerY = y + radius
+                    if (x < 0) {
+                        x = 0
+                    }
+                    if (x > ($draw.width() - 2 * radius)) {
+                        x = $draw.width() - 2 * radius
+                    }
+                    if (y < $("#navbar").height()) {
+                        y = $("#navbar").height()
+                    }
+                    if (y > ($draw.height() - 2 * radius + $("#navbar").height())) {
+                        y = $draw.height() - 2 * radius + $("#navbar").height()
+                    }
+                    console.log(x, y)
+                    $("#" + circlename).css({ 'left': x + 'px', 'top': y + 'px' })
                 }
-                if (x > ($draw.width() - 2 * radius)) {
-                    x = $draw.width() - 2 * radius
-                }
-                if (y < $("#navbar").height()) {
-                    y = $("#navbar").height()
-                }
-                if (y > ($draw.height() - 2 * radius + $("#navbar").height())) {
-                    y = $draw.height() - 2 * radius + $("#navbar").height()
-                }
-                console.log(x, y)
-                $("#" + circlename).css({ 'left': x + 'px', 'top': y + 'px' })
-                return false
             })
             $(document).bind('mouseup', function (event) {
-                $(this).unbind('mousemove')
-                $(this).unbind('mouseup')
+                circleMoving = false
             })
-            return false
+        })
+        var pointA = {//中心点坐标
+            X: $("#" + circlename).width() / 2 + $("#" + circlename).offset().left,
+            Y: $("#" + circlename).height() / 2 + $("#" + circlename).offset().top
+        }
+        console.log(pointA)
+        var pointB = {}//起始点坐标
+        var pointC = {}//结束点坐标
+        //鼠标获取起始点和结束点
+        var typeMouse = false
+
+        var allA = 0//存放鼠标旋转总度数
+        var count = 0
+        //元素跟着鼠标移动旋转
+        $("#" + circlename).mousedown(function (event) {
+            event.preventDefault()
+            event.stopPropagation()
+
+            typeMouse = true
+            if (count < 1) {//以鼠标第一次落下的点为起点
+                pointB.X = event.pageX
+                pointB.Y = event.pageY
+                count++
+            }
+            console.log(5, pointA, pointB)
+            $(document).on("mousemove", function (e) {
+                e.preventDefault()
+                if (typeMouse) {
+                    pointC.x = e.pageX
+                    pointC.y = e.pageY//获取结束点坐标
+                    // 计算出旋转角度
+                    var AB = {}
+                    var AC = {}
+                    AB.X = (pointB.X - pointA.X)
+                    AB.Y = (pointB.Y - pointA.Y)
+                    AC.X = (pointC.X - pointA.X)
+                    AC.Y = (pointC.Y - pointA.Y)//分别求出AB，AC的向量坐标表示
+                    var direct = (AB.X * AC.Y) - (AB.Y * AC.X)//AB，AC的向量坐标显示
+                    var lengthAB = Math.sqrt(Math.pow(pointA.X - pointB.X, 2) +
+                        Math.pow(pointA.Y - pointB.Y, 2)),
+                        lengthAC = Math.sqrt(Math.pow(pointA.X - pointC.X, 2) +
+                            Math.pow(pointA.Y - pointC.Y, 2)),
+                        lengthBC = Math.sqrt(Math.pow(pointB.X - pointC.X, 2) +
+                            Math.pow(pointB.Y - pointC.Y, 2));
+                    var cosA = (Math.pow(lengthAB, 2) + Math.pow(lengthAC, 2) - Math.pow(lengthBC, 2)) /
+                        (2 * lengthAB * lengthAC);
+                    var angleA = Math.round(Math.acos(cosA) * 180 / Math.PI)
+                    if (direct < 0) {
+                        allA = -angleA//叉乘结果为负表示逆时针旋转 逆时针旋转减度数
+                    } else {
+                        allA = angleA//叉乘结果为正表示顺时针旋转 顺时针旋转加度数
+                    }
+                    console.log(allA)
+                    $("#" + circlename).css('transform', 'rotate(' + allA + 'deg)')
+                }
+            })
+            $(document).on("mouseup", function (e) {
+                typeMouse = false
+            })
         })
     })
-    
-
 })
