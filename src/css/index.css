@@ -1,0 +1,84 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#wapper {
+    width: 100%;
+    height: 100%;
+    /* background-color: aquamarine; */
+    position: absolute;
+}
+
+#navbar {
+    border-radius: 0px;
+    margin: 0;
+    height: 5%;
+    border: 0;
+}
+
+#main {
+    float: left;
+    background-color: white;
+    width: 100%;
+    height: 95%;
+}
+
+#left {
+    float: left;
+    width: 75%;
+    height: 100%;
+}
+
+#right {
+    float: right;
+    width: 25%;
+    height: 100%;
+}
+#wenben{
+    margin: 0;
+}
+#right-tab-wapper{
+    text-align: center;
+    height: 100%;
+    border-left: 3px dotted gray;
+}
+#right-tab-wapper .tab-top >li{
+    height: 5%;
+}
+#right-tab-wapper .tab-top {
+    border-bottom: 2px dotted;
+}
+#right-tab-wapper .tab-bottom{
+    height: 95%;
+}
+#right-tab-wapper .tab-bottom .tab-pane,#right-tab-wapper .tab-bottom .tab-pane form{
+    height: 100%;
+}
+.nav-pills>li{
+    width: 50%;
+}
+#style,#text{
+    padding: 30px 20px;
+}
+.line-style ,.line-width{
+    margin-left: 45%;
+    line-height: 34px;
+    margin-bottom: 0!important;
+}
+.table-select,.table-select>option{
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+}
+.color-div{
+    height: 34px;
+    line-height: 34px;
+}
+
+/***********************************************图形***********************************************/
+.circle,.rect {
+    position: absolute;
+    border: 10px solid;
+    cursor: move;
+}

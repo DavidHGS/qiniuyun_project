@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>七牛云项目</title>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+  <link href="./css/bootstrap-colorpicker.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/index.css">
+   <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+   <script src="./js/jquery.min.js"></script>
+   <script src="./bootstrap/js/bootstrap.min.js"></script>
+   <script src="./js/bootstrap-colorpicker.min.js"></script>
+  <script src="./js/index.js"></script>
+</head>
+
+<body>
+  <div id="wapper">
+    <nav id="navbar" class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="javascript:;">七牛云画图</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                aria-expanded="false">文件<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="javascript:;">导入</a></li>
+                <li><a href="javascript:;">导出</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                aria-expanded="false">图形<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li id="circle"><a href="javascript:;">圆形</a></li>
+                <li id="rect"><a href="javascript:;">矩形</a></li>
+              </ul>
+            </li>
+            <li><a href="javascript:;">
+                < 回滚</a>
+            </li>
+            <li><a href="javascript:;">重做 ></a></li>
+          </ul>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div id="main">
+      <div id="left"></div>
+      <div id="right">
+
+        <div id="right-tab-wapper">
+          <ul class="nav nav-pills tab-top" role="tablist">
+            <li class="nav-item active" id="yangshi"><a href="#style" role="tab"  data-toggle="pill" style="border-right: 1px dotted;">样式</a></li>
+            <li class="nav-item" id="wenben"><a href="#text"  role="tab" data-toggle="pill" style="border-left: 1px dotted;" >文本</a></li>
+          </ul>
+          <div class="tab-content tab-bottom">
+            <div class="tab-pane fade active in" id="style">
+              <form>
+                <div class="form-group row">
+                  <div class="col-sm-4 ">
+                    <label for="inputPassword"  class="col-sm-12 col-form-label line-width">线宽</label>
+                  </div>
+                  <div class="col-sm-5">
+                    <input type="text" class="form-control" id="xiankuan" placeholder="px">
+                  </div>
+                </div>
+                
+                <div class="form-group row ">
+                  <div class="col-sm-4">
+                    <label for="inputPassword" class="col-sm-12 col-form-label line-style">线型</label>
+                  </div>
+                  <div class="dropdown col-sm-5 ">
+                    <select class="table-select" id="xianxing">
+                      <option>请选择样式</option>
+                      <option value="dotted">dotted</option>
+                      <option value="solid">solid</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4 ">
+                    <label for="inputPassword"  class="col-sm-12 col-form-label line-width">线色</label>
+                  </div>
+                  <div class="col-sm-5 color-div">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <div class="input-group-addon">请选择颜色</div>
+                        <input type="text" class="form-control color" id="xianse" placeholder="javascript:;000000">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4 ">
+                    <label for="inputPassword" class="col-sm-12 col-form-label line-width">填充色</label>
+                  </div>
+                  <div class="col-sm-5 color-div">
+                    <div class="input-group">
+                      <div class="input-group-addon">请选择颜色</div>
+                      <input type="text" class="form-control color" id="tianchongse" placeholder="javascript:;000000">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="text">
+              <form>
+                <div class="form-group row">
+                  <div class="col-sm-4">
+                    <label for="inputPassword" class="col-sm-12 col-form-label line-style">字体</label>
+                  </div>
+                  <div class="dropdown col-sm-5 ">
+                    <select class="table-select">
+                      <option>请选择字体</option>
+                      <option value="dotted">微软雅黑</option>
+                      <option value="solid">宋体</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-4 ">
+                    <label for="inputPassword" class="col-sm-12 col-form-label line-width">字号</label>
+                  </div>
+                  <div class="col-sm-5">
+                    <input type="text" class="form-control" placeholder="px">
+                  </div>
+                </div>
+                
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</body>
+
+</html>
