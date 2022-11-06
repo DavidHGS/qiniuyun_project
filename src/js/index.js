@@ -43,20 +43,14 @@ $(document).ready(function () {
     var circleMoving = false
     var rectMoving = false
     //当前选中对象
-    var $currObj = null
-    if ($currObj != null) {
-        $currObj.css("border-width", $("#xiankuan").val())
-        $currObj.css("border-style", $("#xianxing").val())
-        $currObj.css("border-color", $("#xianse").val())
-        $currObj.css("background-color", $("#tianchongse").val())
-    }
+
     $drawCir = $("#circle")//nav 点击按钮
     $drawRect = $("#rect")//nav 点击按钮
     /***************************************************矩形****************************************************** */
     $drawRect.click(function (event) {//click事件创建矩形
         rectCnt = rectCnt + 1
         var rectname = 'rect_' + rectCnt
-        $rect = $('<div class="rect"></div>');
+        $rect = $('<div class="rect"><div class="rotate">旋转</div></div>');
         $rect.attr('id', rectname);
         $draw.append($rect);
         var width = 200, height = 100//真正宽高是198，98
@@ -77,50 +71,51 @@ $(document).ready(function () {
             $("#xianse").val("" + $(this).css("border-color"))
             $("tianchongse").val("" + $(this).css("background-color"))
         })
-        console.log($currObj)
-        $("#" + rectname).hover(function (event) {
+        $("#" + rectname).bind("mousemove", function (event) {
             pointA = {//中心点坐标
                 X: $("#" + rectname).width() / 2 + $("#" + rectname).offset().left + parseInt($("#" + rectname).css("border-width")),
                 Y: $("#" + rectname).height() / 2 + $("#" + rectname).offset().top + parseInt($("#" + rectname).css("border-width"))
             }
-            if ((event.pageX < pointA.X + $("#" + rectname).width() / 2 && event.pageX > pointA.X - $("#" + rectname).width() / 2) && (event.pageY < (pointA.Y + $("#" + rectname).height() / 2) && event.pageY > (pointA.Y - $("#" + rectname).height() / 2))) {
+            if ((pointA.X - $("#" + rectname).width() / 2 < event.pageX && event.pageX < pointA.X + $("#" + rectname).width() / 2) && ((pointA.Y - $("#" + rectname).height() / 2) < event.pageY && event.pageY < (pointA.Y + $("#" + rectname).height() / 2))) {
                 $("#" + rectname).css("cursor", "move")
             }
-            else if 
+            else if
                 (
-                    (
-                        (pointA.X + $("#" + rectname).width() / 2 <= event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width")))
-                        ||
-                        (pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width") <= event.pageX <= pointA.X - $("#" + rectname).width() / 2))
-                    )
-                    &&
-                    (
-                        (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageY <= pointA.X + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")) )
-                    )
-
+                (
+                    (pointA.X + $("#" + rectname).width() / 2 <= event.pageX && event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width")))
                     ||
-                    (
-                        (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width") <= event.pageY <= pointA.Y - $("#" + rectname).height() / 2))
-                        ||
-                        (pointA.Y + $("#" + rectname).height() / 2 <= event.pageY <= pointA.Y + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
-                    )
-                    &&
-                    (   (
-                        pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width"))
-                        )
-                    )
-                    ){
+                    (pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageX && event.pageX <= pointA.X - $("#" + rectname).width() / 2)
+                )
+                &&
+                (
+                    (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageY && event.pageY <= pointA.X + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
+                )
+
+                ||
+                (
+                    (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageY && event.pageY <= pointA.Y - $("#" + rectname).height() / 2)
+                    ||
+                    (pointA.Y + $("#" + rectname).height() / 2 <= event.pageY && event.pageY <= pointA.Y + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
+                )
+                &&
+                ((
+                    pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageX && event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width"))
+                )
+                )
+            ) {
                 $("#" + rectname).css("cursor", "se-resize")
             }
         })
         $("#" + rectname).mousedown(function (event) {
+            event.preventDefault()
+            event.stopPropagation()
             pointA = {//中心点坐标
                 X: $("#" + rectname).width() / 2 + $("#" + rectname).offset().left + parseInt($("#" + rectname).css("border-width")),
                 Y: $("#" + rectname).height() / 2 + $("#" + rectname).offset().top + parseInt($("#" + rectname).css("border-width"))
             }
             minWidth = $("#" + rectname).width() - parseInt($("#" + rectname).css("border-width")) * 2
             minHeight = $("#" + rectname).height() - parseInt($("#" + rectname).css("border-width")) * 2
-            if ((event.pageX < pointA.X + $("#" + rectname).width() / 2 && event.pageX > pointA.X - $("#" + rectname).width() / 2) && (event.pageY < (pointA.Y + $("#" + rectname).height() / 2) && event.pageY > (pointA.Y - $("#" + rectname).height() / 2))) {
+            if ((pointA.X - $("#" + rectname).width() / 2 < event.pageX && event.pageX < pointA.X + $("#" + rectname).width() / 2) && ((pointA.Y - $("#" + rectname).height() / 2) < event.pageY && event.pageY < (pointA.Y + $("#" + rectname).height() / 2))) {
                 //在小矩形内 触发平移事件
                 $("#" + rectname).css("cursor", "move")
                 rectMoving = true
@@ -152,26 +147,234 @@ $(document).ready(function () {
                 $(document).bind('mouseup', function (event) {
                     rectMoving = false
                 })
+
             }
             else if (
                 (
-                    (pointA.X + $("#" + rectname).width() / 2 <= event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width")))
+                    (pointA.X + $("#" + rectname).width() / 2 <= event.pageX && event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width")))
                     ||
-                    (pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width") <= event.pageX <= pointA.X - $("#" + rectname).width() / 2))
+                    (pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageX && event.pageX <= pointA.X - $("#" + rectname).width() / 2)
                 )
                 &&
                 (
-                    (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width") <= event.pageY <= pointA.Y - $("#" + rectname).height() / 2))
-                    ||
-                    (pointA.Y + $("#" + rectname).height() / 2 <= event.pageY <= pointA.Y + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
+                    (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageY && event.pageY <= pointA.X + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
                 )
-            ) {//else if
-                confirm("yes")
-                $("#" + rectname).css("cursor", "se-resize")
-                //end else if
-            }
+
+                ||
+                (
+                    (pointA.Y - $("#" + rectname).height() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageY && event.pageY <= pointA.Y - $("#" + rectname).height() / 2)
+                    ||
+                    (pointA.Y + $("#" + rectname).height() / 2 <= event.pageY && event.pageY <= pointA.Y + $("#" + rectname).height() / 2 + parseInt($("#" + rectname).css("border-width")))
+                )
+                &&
+                ((
+                    pointA.X - $("#" + rectname).width() / 2 - parseInt($("#" + rectname).css("border-width")) <= event.pageX && event.pageX <= pointA.X + $("#" + rectname).width() / 2 + parseInt($("#" + rectname).css("border-width"))
+                )
+                )
+            ) {}
+            // {//else if
+            //     var pointB = {};
+            //     var pointC = {}; // A,B,C分别代表中心点，起始点，结束点坐标
+            //     // 这里通过鼠标的移动获取起始点和结束点
+            //     var typeMouse = false;
+            //     var moveMouse = false;
+            //     var allA = 0; // 存放鼠标旋转总共的度数
+            //     var count = 0;
+            //     var mPointB = {} // 移动的B点距离
+            //     var init = {
+            //         count: 0
+            //     }
+            //     var oldTarget = {
+            //         target: null,
+            //         angle: 0
+            //     }
+            //     // 元素跟随鼠标移动旋转拉伸
+            //     $("#" + rectname).css("cursor", "se-resize")
+            //     pointA.X = $("#" + rectname).width() / 2 + $("#" + rectname).offset().left + parseInt($("#" + rectname).css("border-width"))
+            //     pointA.Y = $("#" + rectname).height() / 2 + $("#" + rectname).offset().top + parseInt($("#" + rectname).css("border-width"))
+            //     // 计算两个旋转方块之间的角度
+            //     var tanA = $("#" + rectname).width() / $("#" + rectname).height()
+            //     var d = Math.round(Math.atan(tanA) * 180 / Math.PI)
+            //     if (oldTarget.target && oldTarget.target != e.currentTarget) {
+            //         if (e.currentTarget == $('.rotate')[0]) {
+            //             oldTarget.angle = 2 * d
+            //         } else {
+            //             oldTarget.angle = -2 * d
+            //         }
+            //     } else {
+            //         oldTarget.angle = 0
+            //     }
+            //     typeMouse = true; //获取起始点坐标
+            //     if (count < 1) { // 以鼠标第一次落下的点为起点
+            //         pointB.X = e.pageX;
+            //         pointB.Y = e.pageY;
+            //         init.count = 0
+            //         oldTarget.target = e.currentTarget // 储存第一次落下的旋转区域
+            //         count++
+            //     }
+            //     if (mPointB.flag) { // 如果移动后,元素的B点也需要加上平移的距离
+            //         pointB.X += mPointB.X
+            //         pointB.Y += mPointB.Y
+            //         mPointB.flag = false
+            //         init.count = 0
+            //       }
+            //       console.log(5, pointA, pointB)
+            //       $(document).on('mousemove', function (e) {
+            //         e.preventDefault()
+            //         if (typeMouse) {
+            //           pointC.X = e.pageX;
+            //           pointC.Y = e.pageY; // 获取结束点坐标
+            //           // 计算每次移动元素的半径变化,用作拉伸
+            //           var scalX1 = pointB.X - pointA.X
+            //           var scalY1 = pointB.Y - pointA.Y
+            //           var scalX = pointC.X - pointA.X
+            //           var scalY = pointC.Y - pointA.Y
+              
+            //           // 计算出旋转角度
+            //           var AB = {};
+            //           var AC = {};
+            //           AB.X = (pointB.X - pointA.X);
+            //           AB.Y = (pointB.Y - pointA.Y);
+            //           AC.X = (pointC.X - pointA.X);
+            //           AC.Y = (pointC.Y - pointA.Y); // 分别求出AB,AC的向量坐标表示
+            //           var direct = (AB.X * AC.Y) - (AB.Y * AC.X); // AB与AC叉乘求出逆时针还是顺时针旋转
+            //           var lengthAB = Math.sqrt(Math.pow(pointA.X - pointB.X, 2) +
+            //               Math.pow(pointA.Y - pointB.Y, 2)),
+            //             lengthAC = Math.sqrt(Math.pow(pointA.X - pointC.X, 2) +
+            //               Math.pow(pointA.Y - pointC.Y, 2)),
+            //             lengthBC = Math.sqrt(Math.pow(pointB.X - pointC.X, 2) +
+            //               Math.pow(pointB.Y - pointC.Y, 2));
+            //           var cosA = (Math.pow(lengthAB, 2) + Math.pow(lengthAC, 2) - Math.pow(lengthBC, 2)) /
+            //             (2 * lengthAB * lengthAC); //   余弦定理求出旋转角
+            //           var angleA = Math.round(Math.acos(cosA) * 180 / Math.PI);
+            //           if (direct < 0) {
+            //             allA = -angleA; //叉乘结果为负表示逆时针旋转， 逆时针旋转减度数
+            //           } else {
+            //             allA = angleA; //叉乘结果为正表示顺时针旋转，顺时针旋转加度数
+            //           }
+              
+            //           allA += oldTarget.angle
+            //           // $('.img-box').css('transform', 'rotate('+allA+'deg)')
+              
+            //           // 计算出拉伸比例
+            //           var sa = Math.sqrt(scalX1 * scalX1 + scalY1 * scalY1)
+            //           var ss = Math.sqrt(scalX * scalX + scalY * scalY)
+            //           var sc = ss / sa
+            //           // console.log(allA, sc)
+            //           $('.img-box').css('transform', 'rotate('+allA+'deg) scale('+sc+')')
+            //         }
+            //       });
+
+            //     //end else if
+            // }
+
         })
+        var pointA = { // 元素中心点 元素1/2自身宽高 + 元素的定位
+            X: $("#" + rectname).width() / 2 + $("#" + rectname).offset().left+parseInt($("#" + rectname).css("border-width")),
+            Y: $("#" + rectname).height() / 2 + $("#" + rectname).offset().top+parseInt($("#" + rectname).css("border-width"))
+          };
+          console.log(pointA, $("#" + rectname).position())
+        
+          var pointB = {};
+          var pointC = {}; // A,B,C分别代表中心点，起始点，结束点坐标
+          // 这里通过鼠标的移动获取起始点和结束点
+          var typeMouse = false;
+          var allA = 0; // 存放鼠标旋转总共的度数
+          var count = 0;
+          var mPointB = {} // 移动的B点距离
+          var init = {
+            count: 0
+          }
+          var oldTarget = {
+            target: null,
+            angle: 0
+          }
+        $(".rotate").on('mousedown', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            // 计算两个旋转方块之间的角度
+            var tanA = $("#" + rectname).width() / $("#" + rectname).height()
+            var d = Math.round(Math.atan(tanA) * 180 / Math.PI)
+        // 　　// 如果当前旋转的区域与上一次旋转的区域不一致,需要加上这两个区域之间的角度差2*tanA,这里我只有两个旋转区域,如果有多个区域,需要分别判断
+        //     if (oldTarget.target && oldTarget.target != e.currentTarget) {
+        //       if (e.currentTarget == $('.rotate')[0]) {
+        //         oldTarget.angle = 2 * d
+        //       } else {
+        //         oldTarget.angle = -2 * d
+        //       }
+        //     } else {
+        //       oldTarget.angle = 0
+        //     }
+            typeMouse = true; //获取起始点坐标
+            if (count < 1) { // 以鼠标第一次落下的点为起点
+              pointB.X = e.pageX;
+              pointB.Y = e.pageY;
+              init.count = 0
+              oldTarget.target = e.currentTarget // 储存第一次落下的旋转区域
+              count++
+            }
+            if (mPointB.flag) { // 如果移动后,元素的B点也需要加上平移的距离
+              pointB.X += mPointB.X
+              pointB.Y += mPointB.Y
+              mPointB.flag = false
+              init.count = 0
+            }
+            console.log(5, pointA, pointB)
+        
+            $(document).on('mousemove', function (e) {
+              e.preventDefault()
+              if (typeMouse) {
+                pointC.X = e.pageX;
+                pointC.Y = e.pageY; // 获取结束点坐标
+                // 计算每次移动元素的半径变化,用作拉伸
+                var scalX1 = pointB.X - pointA.X
+                var scalY1 = pointB.Y - pointA.Y
+                var scalX = pointC.X - pointA.X
+                var scalY = pointC.Y - pointA.Y
+        
+                // 计算出旋转角度
+                var AB = {};
+                var AC = {};
+                AB.X = (pointB.X - pointA.X);
+                AB.Y = (pointB.Y - pointA.Y);
+                AC.X = (pointC.X - pointA.X);
+                AC.Y = (pointC.Y - pointA.Y); // 分别求出AB,AC的向量坐标表示
+                var direct = (AB.X * AC.Y) - (AB.Y * AC.X); // AB与AC叉乘求出逆时针还是顺时针旋转
+                var lengthAB = Math.sqrt(Math.pow(pointA.X - pointB.X, 2) +
+                    Math.pow(pointA.Y - pointB.Y, 2)),
+                  lengthAC = Math.sqrt(Math.pow(pointA.X - pointC.X, 2) +
+                    Math.pow(pointA.Y - pointC.Y, 2)),
+                  lengthBC = Math.sqrt(Math.pow(pointB.X - pointC.X, 2) +
+                    Math.pow(pointB.Y - pointC.Y, 2));
+                var cosA = (Math.pow(lengthAB, 2) + Math.pow(lengthAC, 2) - Math.pow(lengthBC, 2)) /
+                  (2 * lengthAB * lengthAC); //   余弦定理求出旋转角
+                var angleA = Math.round(Math.acos(cosA) * 180 / Math.PI);
+                if (direct < 0) {
+                  allA = -angleA; //叉乘结果为负表示逆时针旋转， 逆时针旋转减度数
+                } else {
+                  allA = angleA; //叉乘结果为正表示顺时针旋转，顺时针旋转加度数
+                }
+        
+                allA += oldTarget.angle
+                // $('.img-box').css('transform', 'rotate('+allA+'deg)')
+        
+                // 计算出拉伸比例
+                var sa = Math.sqrt(scalX1 * scalX1 + scalY1 * scalY1)
+                var ss = Math.sqrt(scalX * scalX + scalY * scalY)
+                var sc = ss / sa
+                // console.log(allA, sc)
+                $("#" + rectname).css('transform', 'rotate('+allA+'deg) scale('+sc+')')
+              }
+            });
+          });
+          $(document).on('mouseup', function (e) {
+            typeMouse = false;
+            moveMouse = false
+          });
     })
+    
+
+
     $drawCir.click(function (event) {//click事件创建圆
         circleCnt = circleCnt + 1
         var circlename = 'circle_' + circleCnt
