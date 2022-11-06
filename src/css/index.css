@@ -61,6 +61,9 @@
 #style,#text{
     padding: 30px 20px;
 }
+#tianchongse,#xianse{
+    width: 200%;
+}
 .line-style ,.line-width{
     margin-left: 45%;
     line-height: 34px;

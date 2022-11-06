@@ -43,7 +43,6 @@ $(document).ready(function () {
     var circleMoving = false
     var rectMoving = false
     //当前选中对象
-
     $drawCir = $("#circle")//nav 点击按钮
     $drawRect = $("#rect")//nav 点击按钮
     /***************************************************矩形****************************************************** */
@@ -60,8 +59,7 @@ $(document).ready(function () {
         $rect.css("height", height + "px");
         //为新创建的矩形添加事件 点击出现右侧属性栏
         $("#" + rectname).on("click", function () {
-            $currObj = $("#" + rectname)
-            console.log($currObj)
+            $(".tab-bottom").attr('id', rectname)
             $("#style").addClass("active in")
             $("#text").removeClass("active")
             $("#yangshi").addClass("active")
@@ -372,7 +370,6 @@ $(document).ready(function () {
             moveMouse = false
           });
     })
-    
 
 
     $drawCir.click(function (event) {//click事件创建圆
@@ -389,7 +386,7 @@ $(document).ready(function () {
         $circle.css("border-radius", radius + "px")
         //为新创建的圆添加事件 点击出现右侧属性栏
         $("#" + circlename).on("click", function () {
-            $currObj = $("#" + circlename)
+            $(".tab-bottom").attr('id', circlename)
             $("#style").addClass("active in")
             $("#text").removeClass("active")
             $("#yangshi").addClass("active")
@@ -489,6 +486,19 @@ $(document).ready(function () {
             })
         })
     })
+    
+    $(".tab-bottom").bind("click",function(){
+        if($(".tab-bottom").attr('id')!=undefined){
+            objName=$(".tab-bottom").attr('id')
+            $curObj=$("#"+objName)
+            $curObj.css("border-width", $("#xiankuan").val())
+            $curObj.css("border-style", $("#xianxing").val())
+            console.log($("#xianse").val(),$("#tianchongse").val())
+            $curObj.css("border-color", $("#xianse").val())
+            $curObj.css("background-color", $("#tianchongse").val())
+        }
+    })
+
 })
         // console.log(pointA)
         // var pointB = {}//起始点坐标
