@@ -82,3 +82,15 @@
     border: 10px solid;
     cursor: move;
 }
+.rotate{
+    position: absolute;
+    right: -50px;
+    bottom: -50px;
+    width: 40px;
+    height: 40px;
+    background-color: royalblue;
+    z-index: 3;
+    cursor: se-resize;
+    line-height: 40px;
+    text-align: center;
+}
