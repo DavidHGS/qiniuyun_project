@@ -32,18 +32,21 @@ void WhiteBoard::on_radioButton_rect_clicked()
 {
     _scene->setCurGraphicsType(Board::GraphicsType::_Rect);
     _scene->setMouseAction(Board::MouseAction::_Draw);
+    setCursorShape(Board::MouseAction::_Draw);
 }
 
 void WhiteBoard::on_radioButton_circle_clicked()
 {
     _scene->setCurGraphicsType(Board::GraphicsType::_Circle);
     _scene->setMouseAction(Board::MouseAction::_Draw);
+    setCursorShape(Board::MouseAction::_Draw);
 }
 
 void WhiteBoard::on_radioButton_choose_clicked()
 {
     _scene->setCurGraphicsType(Board::GraphicsType::_NoneType);
     _scene->setMouseAction(Board::MouseAction::_Normal);
+    setCursorShape(Board::MouseAction::_Normal);
 }
 
 void WhiteBoard::updateAttributePanel(Board::Attribute &attr, Board::GraphicsType type)
@@ -161,5 +164,21 @@ void WhiteBoard::updateItemAttribute(Board::Attribute &attr)
             CircleItem *temp = dynamic_cast<CircleItem*>(_curItem);
             temp->setAttribute(attr);
         }
+    }
+}
+
+void WhiteBoard::setCursorShape(Board::MouseAction mouseAction)
+{
+    if(mouseAction == Board::MouseAction::_Draw)
+    {
+        QPixmap mMap(":/source/pen.png");
+        QSize msize(20, 20);
+        QPixmap mScaleMap = mMap.scaled(msize, Qt::KeepAspectRatio);
+        QCursor mCursor(mScaleMap);
+        ui->graphicsView_whiteBoard->viewport()->setCursor(mCursor);
+    }
+    else if(mouseAction == Board::MouseAction::_Normal)
+    {
+        ui->graphicsView_whiteBoard->viewport()->setCursor(Qt::ArrowCursor);
     }
 }

@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>source/import.jpeg</file>
         <file>source/export.png</file>
+        <file>source/pen.png</file>
     </qresource>
 </RCC>

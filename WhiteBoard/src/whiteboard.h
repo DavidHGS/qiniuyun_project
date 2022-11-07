@@ -29,6 +29,7 @@ private:
     void setPanelEditable(bool isEditable);
     void updateAttributePanel(Board::Attribute &attr, Board::GraphicsType type);
     void updateItemAttribute(Board::Attribute &attr);
+    void setCursorShape(Board::MouseAction mouseAction);
 
 public:
     explicit WhiteBoard(QWidget *parent = 0);

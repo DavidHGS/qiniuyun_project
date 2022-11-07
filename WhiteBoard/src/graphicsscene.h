@@ -6,6 +6,7 @@
 #include "circleitem.h"
 #include <QObject>
 #include <QGraphicsScene>
+#include <map>
 
 class GraphicsScene : public QGraphicsScene
 {

@@ -38,6 +38,7 @@ void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
         _graphicsItems[_curGraphicsItem] = Board::GraphicsType::_Circle;
         _curGraphicsItem->setPos(itemPos);
         connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
+        connect(this, SIGNAL(selectionChanged()), temp, SLOT(boundingShow()));
     }
 }
 
@@ -95,7 +96,7 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
-            emit itemSelected(nullptr, Board::GraphicsType::_NoneType);
+
             QGraphicsScene::mousePressEvent(event);
         }
     }
@@ -103,10 +104,11 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+
     if(event->buttons() & Qt::LeftButton)
     {
         QPointF mouseCurPos = event->scenePos();
-        qDebug() << "GraphicsScene INFO: mouse current pos " <<mouseCurPos;
+//        qDebug() << "GraphicsScene INFO: mouse current pos " <<mouseCurPos;
         if(_mouseAction == Board::_Draw)
         {
             drawItem(_curGraphicsItem, _curGraphicsType, mouseCurPos);
@@ -126,29 +128,26 @@ void GraphicsScene::setCurGraphicsType(Board::GraphicsType type)
 
 void GraphicsScene::setMouseAction(Board::MouseAction mouseAction)
 {
-    _mouseAction = mouseAction;
+    _mouseAction = mouseAction;  
 }
 
 void GraphicsScene::itemSelected()
 {
-//    qDebug() << "GraphicsScene INFO: itemSelected";
     _curGraphicsItem = dynamic_cast<QGraphicsItem*>(sender());
-    if(_graphicsItems[_curGraphicsItem] == Board::GraphicsType::_Rect)
+    _curGraphicsType = _graphicsItems[_curGraphicsItem];
+//     qDebug() << "GraphicsScene INFO: itemSelected " << _curGraphicsItem;
+    for(auto it : _graphicsItems)
     {
-        RectItem *temp = dynamic_cast<RectItem*>(_curGraphicsItem);
-//        Board::Attribute attr = temp->getAttribute();
-//        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
-//                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
-//                << attr._fillColor << ")";
-        emit itemSelected(_curGraphicsItem, _graphicsItems[_curGraphicsItem]);
+        if(it.first == _curGraphicsItem)
+        {
+            it.first->setZValue(1);
+        }
+        else
+        {
+            it.first->setZValue(0);
+            it.first->setSelected(false);
+        }
     }
-    else if(_graphicsItems[_curGraphicsItem] == Board::GraphicsType::_Circle)
-    {
-        CircleItem *temp = dynamic_cast<CircleItem*>(_curGraphicsItem);
-//        Board::Attribute attr = temp->getAttribute();
-//        qDebug() << "GraphicsScene INFO ： current item rect, attribute(" << attr._boundingColor
-//                 <<", " << attr._boundingLineType << ", "<<attr._boundingLineWidth << ", "
-//                << attr._fillColor << ")";
-        emit itemSelected(_curGraphicsItem, _graphicsItems[_curGraphicsItem]);
-    }
+    emit itemSelected(_curGraphicsItem, _curGraphicsType);
+//    qDebug() << "GraphicsScene INFO: current ZValue: " << _curGraphicsItem->zValue();
 }

@@ -30,8 +30,8 @@ enum MouseHandlePos
 };
 struct Attribute
 {
-    Attribute(int boundingWidth = 1, Qt::PenStyle boundingLineType = Qt::SolidLine,
-              QColor boundingColor = Qt::black, QColor fillColor = Qt::white) :
+    Attribute(int boundingWidth = 3, Qt::PenStyle boundingLineType = Qt::SolidLine,
+              QColor boundingColor = Qt::black, QColor fillColor = QColor(255, 255, 255, 0)) :
         _boundingLineWidth(boundingWidth),
         _boundingLineType(boundingLineType),
         _boundingColor(boundingColor),

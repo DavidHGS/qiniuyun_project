@@ -28,9 +28,7 @@ void RectItem::init()
 
 void RectItem::updateHandleArea()
 {
-//    qDebug() << "RectItem INFO: updateHandleArea ";
     QRectF rect = this->boundingRect();
-//    qDebug() << "RectItem INFO: rect size" << rect;
     _handleArea[Board::MouseHandlePos::_TopLeft] = QRectF(QPointF(rect.left() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
     _handleArea[Board::MouseHandlePos::_TopMiddle] = QRectF(QPointF(rect.center().x() - rect.width() / 6, rect.top() - _handleAreasize.height() / 2), QSizeF(rect.width() / 3, _handleAreasize.height()));
     _handleArea[Board::MouseHandlePos::_TopRight] = QRectF(QPointF(rect.right() - _handleAreasize.width() / 2, rect.top() - _handleAreasize.height() / 2), _handleAreasize);
@@ -88,7 +86,7 @@ void RectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     }
     else
     {
-        this->setCursor(Qt::SizeAllCursor);
+        this->setCursor(Qt::ArrowCursor);
     }
     QGraphicsRectItem::hoverEnterEvent(event);
 }
@@ -102,29 +100,32 @@ void RectItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void RectItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    QPointF mouseCurPos = event->pos();
-    Board::MouseHandlePos mouseHandle = getHandleArea(mouseCurPos);
-    _curHandle = mouseHandle;
-//    qDebug() << "RectItem INFO: current handle " << _curHandle;
-    if(mouseHandle == Board::MouseHandlePos::_TopMiddle || mouseHandle == Board::MouseHandlePos::_BottomMiddle)
+    if(this->isSelected())
     {
-        this->setCursor(Qt::SizeVerCursor);
-    }
-    else if(mouseHandle == Board::MouseHandlePos::_LeftMiddle || mouseHandle == Board::MouseHandlePos::_RightMiddle)
-    {
-        this->setCursor(Qt::SizeHorCursor);
-    }
-    else if(mouseHandle == Board::MouseHandlePos::_TopLeft || mouseHandle == Board::MouseHandlePos::_BottomRight)
-    {
-        this->setCursor(Qt::SizeFDiagCursor);
-    }
-    else if(mouseHandle == Board::MouseHandlePos::_TopRight || mouseHandle == Board::MouseHandlePos::_BottomLeft)
-    {
-        this->setCursor(Qt::SizeBDiagCursor);
-    }
-    else
-    {
-        this->setCursor(Qt::SizeAllCursor);
+        QPointF mouseCurPos = event->pos();
+        Board::MouseHandlePos mouseHandle = getHandleArea(mouseCurPos);
+        _curHandle = mouseHandle;
+        //    qDebug() << "RectItem INFO: current handle " << _curHandle;
+        if(mouseHandle == Board::MouseHandlePos::_TopMiddle || mouseHandle == Board::MouseHandlePos::_BottomMiddle)
+        {
+            this->setCursor(Qt::SizeVerCursor);
+        }
+        else if(mouseHandle == Board::MouseHandlePos::_LeftMiddle || mouseHandle == Board::MouseHandlePos::_RightMiddle)
+        {
+            this->setCursor(Qt::SizeHorCursor);
+        }
+        else if(mouseHandle == Board::MouseHandlePos::_TopLeft || mouseHandle == Board::MouseHandlePos::_BottomRight)
+        {
+            this->setCursor(Qt::SizeFDiagCursor);
+        }
+        else if(mouseHandle == Board::MouseHandlePos::_TopRight || mouseHandle == Board::MouseHandlePos::_BottomLeft)
+        {
+            this->setCursor(Qt::SizeBDiagCursor);
+        }
+        else
+        {
+            this->setCursor(Qt::SizeAllCursor);
+        }
     }
 }
 
@@ -150,13 +151,16 @@ void RectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
 //        qDebug() << "RectItem INFO: is selected ";
+        this->setSelected(true);
         emit selected();
     }
 }
 
 void RectItem::setRect(const QRectF &rect)
 {
+//    qDebug() <<"RectItem INFO: draw rect " << rect;
     QGraphicsRectItem::setRect(rect);
+    emit rectChange(rect);
     setAttribute(_attribute);
     updateHandleArea();
 }

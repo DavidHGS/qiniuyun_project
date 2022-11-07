@@ -27,6 +27,8 @@ private:
     void adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle);
 signals:
     void selected();
+    void rectChange(QRectF rect);
+
 private:
     Board::Attribute _attribute;
     QSizeF _handleAreasize;
