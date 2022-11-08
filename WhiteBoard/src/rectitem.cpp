@@ -21,6 +21,8 @@ RectItem::~RectItem()
 void RectItem::init()
 {
     _handleAreasize = QSizeF(20.0, 20.0);
+    _lineLength = 30;
+    _radius = 10;
     updateHandleArea();
     this->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable );
     this->setAcceptHoverEvents(true);
@@ -59,6 +61,7 @@ void RectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->isSelected())
     {
+        qDebug () << "RectItem::hoverEnterEvent";
         QPointF mouseCurPos = event->pos();
         Board::MouseHandlePos mouseHandle = getHandleArea(mouseCurPos);
         _curHandle = mouseHandle;
@@ -208,8 +211,6 @@ void RectItem::adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle)
         topLeft.setX(mousePos.x());
         bottomRight.setY(mousePos.y());
     }
-
-//     qDebug() << "RectItem INFO: " << topLeft <<", " <<bottomRight;
     if(topLeft.x() < bottomRight.x() && topLeft.y() < bottomRight.y())
     {
         setRect(QRectF(topLeft, bottomRight));
@@ -229,10 +230,41 @@ void RectItem::setAttribute(Board::Attribute attr)
     this->setPen(pen);
     QBrush brush(_attribute._fillColor);
     this->setBrush(brush);
-    this->update();
 }
 
 Board::Attribute RectItem::getAttribute()
 {
     return _attribute;
+}
+
+void RectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+//    qDebug() << "RectItem::paint";
+    Q_UNUSED(widget);
+    if(this->rect().isEmpty())
+    {
+        return;
+    }
+    painter->setPen(this->pen());
+    painter->setBrush(_attribute._fillColor);
+    painter->drawRect(this->rect());
+    if(option->state & QStyle::State_Selected)
+    {
+        QRectF rect = this->rect();
+        painter->setPen(QPen(option->palette.windowText(), 0, Qt::DashLine));
+        painter->setBrush(Qt::NoBrush);
+        const qreal pad = painter->pen().widthF() / 2 + _attribute._boundingLineWidth;
+        painter->drawRect(rect.adjusted(-pad, -pad, pad, pad));
+        painter->drawLine(rect.center().x(), rect.top(), rect.center().x(), rect.top() - _lineLength);
+        painter->drawEllipse(rect.center().x() - _radius, rect.top() - _lineLength - 2 *_radius,
+                             2 * _radius, 2 * _radius);
+    }
+}
+
+QRectF RectItem::boundingRect() const
+{
+    QRectF rect =  this->rect();
+    const qreal pad = this->pen().widthF() / 2 + _attribute._boundingLineWidth;
+    return QRectF(rect.x() - pad, rect.y() - pad - _lineLength - 2 * _radius,
+                  rect.width() + 2 * pad, rect.height() + 2 * pad + _lineLength + 2 * _radius);
 }

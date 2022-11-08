@@ -22,6 +22,8 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private:
     void init();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
     void updateHandleArea();
     Board::MouseHandlePos getHandleArea(QPointF mousePos);
     void adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle);
@@ -34,6 +36,8 @@ private:
     QSizeF _handleAreasize;
     std::map<Board::MouseHandlePos, QRectF> _handleArea;
     Board::MouseHandlePos _curHandle;
+    qreal _radius;
+    qreal _lineLength;
 };
 
 #endif // RECTITEM_H

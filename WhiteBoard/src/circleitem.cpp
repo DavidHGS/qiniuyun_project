@@ -49,7 +49,6 @@ void CircleItem::setAttribute(Board::Attribute attr)
     this->setPen(pen);
     QBrush brush(_attribute._fillColor);
     this->setBrush(brush);
-    this->update();
 }
 
 Board::Attribute CircleItem::getAttribute()
@@ -63,7 +62,7 @@ void CircleItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
 //        qDebug() << "CircleItem INFO: is selected ";
         QRectF rect = this->boundingRect();
-        Board::Attribute attr(1, Qt::DashLine, Qt::black);//边界矩形属性
+        Board::Attribute attr(0, Qt::DashLine, Qt::black);//边界矩形属性
         _boundingRect->setAttribute(attr);
         _boundingRect->setRect(rect);
         _boundingRect->setParentItem(this);
