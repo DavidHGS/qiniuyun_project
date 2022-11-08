@@ -38,7 +38,6 @@ void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
         _graphicsItems[_curGraphicsItem] = Board::GraphicsType::_Circle;
         _curGraphicsItem->setPos(itemPos);
         connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
-        connect(this, SIGNAL(selectionChanged()), temp, SLOT(boundingShow()));
     }
 }
 
@@ -78,7 +77,7 @@ void GraphicsScene::drawItem(QGraphicsItem *item, Board::GraphicsType type, QPoi
         if(Board::GraphicsType::_Circle == type)
         {
             CircleItem *circleItem = dynamic_cast<CircleItem *>(item);
-            circleItem->setRect(QRect(circleItem->rect().x(), circleItem->rect().y(),
+            circleItem->setRect(QRect(0, 0,
                                 mouseCurPos.x() -  _mouseStartPos.x(), mouseCurPos.x() -  _mouseStartPos.x()));
             emit circleItem->selected();
         }

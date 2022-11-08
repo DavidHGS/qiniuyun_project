@@ -26,7 +26,8 @@ enum MouseHandlePos
     _RightMiddle,
     _BottomLeft,
     _BottomMiddle,
-    _BottomRight
+    _BottomRight,
+    _Rotate
 };
 struct Attribute
 {

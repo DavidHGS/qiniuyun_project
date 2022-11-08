@@ -28,18 +28,22 @@ SOURCES += \
         whiteboard.cpp \
     graphicsscene.cpp \
     rectitem.cpp \
-    circleitem.cpp
+    circleitem.cpp \
+    baseitem.cpp
 
 HEADERS += \
         whiteboard.h \
     graphicsscene.h \
     rectitem.h \
     define.h \
-    circleitem.h
+    circleitem.h \
+    baseitem.h
 
 FORMS += \
         whiteboard.ui
 
 RESOURCES += \
     resource.qrc
+
+DISTFILES +=
 
