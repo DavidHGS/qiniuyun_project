@@ -1,4 +1,6 @@
 #pragma once
+
+#include "define.h"
 #include <vector>
 #include <map>
 

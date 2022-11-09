@@ -1,5 +1,4 @@
 #include "Server.h"
-#include "define.h"
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -7,6 +6,7 @@
 #include <memory.h>
 #include <thread>
 #include <string>
+#include <fstream>
 
 #define LOG(s) (std::cout << "Server INFO: " << s << std::endl)
 
@@ -77,12 +77,12 @@ void Server::dealConnect(int clientFd)
         memset(recvBuf, 0, RECVBUFLEN);
         int readLen = read(clientFd, recvBuf, RECVBUFLEN);
         char msgType;
-        memcpy(recv, &msgType, sizeof(char));
-        if(msgType == 'l')
+        memcpy(recvBuf, &msgType, sizeof(char));
+        if(msgType == MSG_LOGIN)
         {
             loginCheck(recvBuf + 1, clientFd);
         }
-        else if(msgType == 's')
+        else if(msgType == MSG_ITEM_STATE)
         {
 
         }
@@ -99,24 +99,59 @@ void Server::loginCheck(const char *checkInfo, int client)
     std::string password(checkInfo + USERNAMELEN, PASSWORDLEN);
     LOG(std::string("username: ") + userName);
     LOG(std::string("password: ") + password);
-    if(_userInfo.find(userName)->second == password)
+    auto it = _userInfo.find(userName);
+    char *sendBuf = new char[SENDBUFLEN];
+    memcpy(sendBuf, &MSG_REPLY, sizeof(char));
+    if(it == _userInfo.end())
     {
-        LOG(userName + std::string(" login success"));
-        char *sendBuf = new char[SENDBUFLEN];
-        char msgType('l');
-        const char *msg = "ok";
-        memcpy(sendBuf, &msgType, sizeof(char));
-        memcpy(sendBuf, msg, strlen(msg) + 1); //要把结束符\0加进去
-        sendMsg(sendBuf, client);
+        LOG(userName + std::string(" no user"));  
+        memcpy(sendBuf + 1, &NOUSER, sizeof(short int));
     }
+    else if(it->second != password)
+    {
+        LOG(userName + std::string(" password error"));  
+        memcpy(sendBuf + 1, &PSWERROR, sizeof(short int)); 
+    }
+    else if(it->second == password)
+    {
+        LOG(userName + std::string(" login success"));  
+        memcpy(sendBuf + 1, &LOGINSUCCESS, sizeof(short int)); 
+    }
+    sendMsg(sendBuf, client);
+    delete [] sendBuf;
 }
 
 void Server::loadUserInfo(const char* fileName)
 {
-
+    std::ifstream fileHandle(fileName, std::ios::in);
+    if(!fileHandle.is_open())
+    {
+        LOG("user file open failed");
+        return;
+    }
+    while(!fileHandle.eof())
+    {
+        std::string userName ;
+        std::string password;
+        fileHandle >> userName >> password;
+        _userInfo[userName] = password;
+        LOG(userName << ": " << password);
+    }
 }
 
 void Server::sendMsg(const char *msg, int client, int msgLen)
 {
-
+    if(msg == nullptr)
+    {
+        return;
+    }
+    if(client == -1)
+    {
+        return;
+    }
+    int sendRet = write(client, msg, msgLen);
+    if(sendRet == -1)
+    {
+        LOG("send failed, error code : " << errno);
+    }
 }
