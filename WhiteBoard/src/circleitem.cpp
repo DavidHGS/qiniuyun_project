@@ -24,7 +24,6 @@ void CircleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     pen.setStyle(_attribute._boundingLineType);
     painter->setPen(pen);
     painter->setBrush(_attribute._fillColor);
-    painter->drawRect(_rect);
     painter->drawEllipse(_rect);
     BaseItem::paint(painter, option, widget);
 }

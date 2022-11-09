@@ -48,37 +48,38 @@ void GraphicsScene::drawItem(QGraphicsItem *item, Board::GraphicsType type, QPoi
         {
             return;
         }
+        QPointF topLeft(0, 0);
+        QPointF bottomRight(0, 0);
+        if(mouseCurPos.x() < _mouseStartPos.x() && mouseCurPos.y() < _mouseStartPos.y())
+        {
+            topLeft = mouseCurPos - _mouseStartPos;
+        }
+        else if(mouseCurPos.x() < _mouseStartPos.x() && mouseCurPos.y() > _mouseStartPos.y())
+        {
+            topLeft = QPointF(mouseCurPos.x() - _mouseStartPos.x(), 0);
+            bottomRight = QPointF(0, mouseCurPos.y() - _mouseStartPos.y());
+        }
+        else if(mouseCurPos.x() > _mouseStartPos.x() && mouseCurPos.y() < _mouseStartPos.y())
+        {
+            topLeft = QPointF(0, mouseCurPos.y() - _mouseStartPos.y());
+            bottomRight = QPointF(mouseCurPos.x() - _mouseStartPos.x(), 0);
+        }
+        else if(mouseCurPos.x() > _mouseStartPos.x() && mouseCurPos.y() > _mouseStartPos.y())
+        {
+            bottomRight = mouseCurPos - _mouseStartPos;
+        }
         if(Board::GraphicsType::_Rect == type)
         {
-            RectItem *rectItem = dynamic_cast<RectItem *>(item);
-            QPointF topLeft(0, 0);
-            QPointF bottomRight(0, 0);
-            if(mouseCurPos.x() < _mouseStartPos.x() && mouseCurPos.y() < _mouseStartPos.y())
-            {
-                topLeft = mouseCurPos - _mouseStartPos;
-            }
-            else if(mouseCurPos.x() < _mouseStartPos.x() && mouseCurPos.y() > _mouseStartPos.y())
-            {
-                topLeft = QPointF(mouseCurPos.x() - _mouseStartPos.x(), 0);
-                bottomRight = QPointF(0, mouseCurPos.y() - _mouseStartPos.y());
-            }
-            else if(mouseCurPos.x() > _mouseStartPos.x() && mouseCurPos.y() < _mouseStartPos.y())
-            {
-                topLeft = QPointF(0, mouseCurPos.y() - _mouseStartPos.y());
-                bottomRight = QPointF(mouseCurPos.x() - _mouseStartPos.x(), 0);
-            }
-            else if(mouseCurPos.x() > _mouseStartPos.x() && mouseCurPos.y() > _mouseStartPos.y())
-            {
-                bottomRight = mouseCurPos - _mouseStartPos;
-            }
+            RectItem *rectItem = dynamic_cast<RectItem *>(item);           
             rectItem->setRect(QRectF(topLeft, bottomRight));
             emit rectItem->selected();
         }
         if(Board::GraphicsType::_Circle == type)
         {
             CircleItem *circleItem = dynamic_cast<CircleItem *>(item);
-            circleItem->setRect(QRect(0, 0,
-                                mouseCurPos.x() -  _mouseStartPos.x(), mouseCurPos.x() -  _mouseStartPos.x()));
+            QRectF itemRect(topLeft, bottomRight);
+            itemRect.setHeight(itemRect.width());
+            circleItem->setRect(itemRect);
             emit circleItem->selected();
         }
 }
