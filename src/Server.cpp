@@ -42,7 +42,7 @@ void Server::run()
         int ret = bind(_listenFd, (sockaddr *)&serverAddr, sizeof(sockaddr));
         if(ret == -1)
         {
-            LOG("bind error");
+            LOG("bind error, error code " << errno);
             return;
         }
         listen(_listenFd, 10);
@@ -56,6 +56,7 @@ void Server::run()
             {
                 LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected");
                 _clientFds.emplace_back(clientFd);
+                // dealConnect(clientFd);
                 std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd);//创建线程去处理和客户端的连接
                 dealThread->detach();//线程自己管理生存周期
             }
@@ -70,21 +71,25 @@ void Server::dealConnect(int clientFd)
     {
         return;
     }
-    LOG("thread created");
+    // LOG("thread created");
+    char *recvBuf = new char[RECVBUFLEN];
     while(1)
     {
-        char *recvBuf = new char[RECVBUFLEN];
         memset(recvBuf, 0, RECVBUFLEN);
         int readLen = read(clientFd, recvBuf, RECVBUFLEN);
-        char msgType;
-        memcpy(recvBuf, &msgType, sizeof(char));
-        if(msgType == MSG_LOGIN)
+        if(readLen > 0)
         {
-            loginCheck(recvBuf + 1, clientFd);
-        }
-        else if(msgType == MSG_ITEM_STATE)
-        {
+            char msgType;
+            memcpy(&msgType, recvBuf, sizeof(msgType));
+            // LOG("msgType: " << msgType);
+            if(msgType == MSG_LOGIN)
+            {
+                loginCheck(recvBuf + 1, clientFd);
+            }
+            else if(msgType == MSG_ITEM_STATE)
+            {
 
+            }
         }
     }
 }
@@ -95,10 +100,10 @@ void Server::loginCheck(const char *checkInfo, int client)
     {
         return;
     }
-    std::string userName(checkInfo, USERNAMELEN);
-    std::string password(checkInfo + USERNAMELEN, PASSWORDLEN);
-    LOG(std::string("username: ") + userName);
-    LOG(std::string("password: ") + password);
+    std::string userName(checkInfo);
+    std::string password(checkInfo + USERNAMELEN);
+    // LOG(std::string("username: ") + userName);
+    // LOG(std::string("password: ") + password);
     auto it = _userInfo.find(userName);
     char *sendBuf = new char[SENDBUFLEN];
     memcpy(sendBuf, &MSG_REPLY, sizeof(char));
@@ -135,7 +140,7 @@ void Server::loadUserInfo(const char* fileName)
         std::string password;
         fileHandle >> userName >> password;
         _userInfo[userName] = password;
-        LOG(userName << ": " << password);
+        // LOG(userName << ": " << password);
     }
 }
 
