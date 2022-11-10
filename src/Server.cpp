@@ -1,5 +1,4 @@
 #include "Server.h"
-#include "http.h"
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -9,7 +8,7 @@
 #include <string>
 #include <fstream>
 
-#define LOG(s) (std::cout << "Server INFO: " << s << std::endl)
+#define LOG(s) (std::cout << "Server INFO: " << s << std::endl << std::endl)
 
 Server::Server()
 {
@@ -57,8 +56,7 @@ void Server::run()
             if(clientFd != -1)
             {
                 LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected");
-                _clientFds.emplace_back(clientFd);
-                std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd);//创建线程去处理和客户端的连接
+                std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd); //创建线程去处理和客户端的连接
                 dealThread->detach();//线程自己管理生存周期
             }
         }
@@ -72,29 +70,67 @@ void Server::dealConnect(int clientFd)
     {
         return;
     }
-    // LOG("thread created");
+
+    // 判断设备类型
     char *recvBuf = new char[RECVBUFLEN];
-    while(1)
+    memset(recvBuf, 0, RECVBUFLEN);
+    read(clientFd, recvBuf, RECVBUFLEN);
+    std::string machineType;
+    _httphandler.getRequestContent(recvBuf, machineType);
+    if(machineType.c_str() == WINDOWS)
+    {
+        _clientFds[clientFd] = WINDOWS;
+    }
+    else if(machineType.c_str() == WEB)
+    {
+        _clientFds[clientFd] = WEB;
+    }
+    else
+    {
+        LOG("undefine machine type");
+        return;
+    }
+
+    while (1)
     {
         memset(recvBuf, 0, RECVBUFLEN);
         int readLen = read(clientFd, recvBuf, RECVBUFLEN);       
         if(readLen > 0)
         {
-            LOG(recvBuf);
-            const char *head =  "HTTP/1.1 200 ok\nContent-Length: 14\nContent-Type: application/json\nKeep-Alive: timeout=5, max=5\n\n{msg: \"hello\"}";
-            write(clientFd, head, strlen(head));
-            LOG(head);
-            
-            char msgType;
-            memcpy(&msgType, recvBuf, sizeof(msgType));
-            // LOG("msgType: " << msgType);
-            if(msgType == MSG_LOGIN)
+            const char *msg = recvBuf;
+            if (machineType.c_str() == WEB)
             {
-                loginCheck(recvBuf + 1, clientFd);
+                std::string content;
+                _httphandler.getRequestContent(recvBuf, content);
+                msg = content.c_str();
             }
-            else if(msgType == MSG_ITEM_STATE)
+            // LOG("http request: " << content);
+            // std::string response;
+            // _httphandler.setResponseContent("\"user\": \"user1\"\n\"password\": \"12345\"", response);
+            // sendMsg(response.c_str(), clientFd);
+            if(strlen(msg) > 0)
             {
-                dealItemMsg(recvBuf, clientFd);
+                char msgType;
+                memcpy(&msgType, msg, sizeof(char));
+                LOG("msgType: " << msgType);
+                if(msgType == MSG_LOGIN)
+                {
+                    loginCheck(msg + 1, clientFd);
+                }
+                else if(msgType == MSG_ITEM_STATE)
+                {
+                    dealItemMsg(msg, clientFd);
+                }
+            }
+        }
+        else
+        {
+            if(errno != EINTR)
+            {
+                auto it = _clientFds.find(clientFd);
+                _clientFds.erase(it);
+                LOG("disconnected");
+                return;
             }
         }
     }
@@ -176,9 +212,9 @@ void Server::dealItemMsg(const char *msg, int client)
     //将消息分发给当前建立了连接的客户端
     for(auto it : _clientFds)
     {
-        if(it != client)
+        if(it.first != client)
         {
-            sendMsg(msg, it);
+            sendMsg(msg, it.first);
         }
     }
 

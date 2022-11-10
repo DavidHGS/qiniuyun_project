@@ -1,6 +1,7 @@
 #pragma once
 
 #include "define.h"
+#include "HttpHandler.h"
 #include <vector>
 #include <map>
 #include <mutex>
@@ -21,8 +22,9 @@ private:
     
 private:
     int _listenFd;      //监听套接字
-    std::vector<int> _clientFds;    //存储用于通信的套接字
+    std::map<int, const char*> _clientFds;    //存储用于通信的套接字
     std::map<std::string, std::string> _userInfo;   //存储用户信息
     std::vector<std::string> _itemStates;
     std::mutex _itemStateMutex;
+    HttpHandler _httphandler;
 };

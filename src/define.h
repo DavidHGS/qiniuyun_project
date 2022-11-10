@@ -28,3 +28,8 @@ const char MSG_LOGIN                = 'L';              //登录消息
 const char MSG_REPLY                = 'R';              //服务器回复
 
 const char MSG_ITEM_STATE           = 'S';              //图元状态
+
+//客户端类型
+const char* WINDOWS                 = "WINDOWS";        //windows端
+
+const char WEB                      = "WEB";            //web端
