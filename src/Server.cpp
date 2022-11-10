@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "http.h"
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -27,6 +28,7 @@ void Server::init()
     _listenFd = -1;
     _clientFds.clear();
     _userInfo.clear();
+    _itemStates.clear();
 }
 
 void Server::run()
@@ -56,7 +58,6 @@ void Server::run()
             {
                 LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected");
                 _clientFds.emplace_back(clientFd);
-                // dealConnect(clientFd);
                 std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd);//创建线程去处理和客户端的连接
                 dealThread->detach();//线程自己管理生存周期
             }
@@ -76,9 +77,14 @@ void Server::dealConnect(int clientFd)
     while(1)
     {
         memset(recvBuf, 0, RECVBUFLEN);
-        int readLen = read(clientFd, recvBuf, RECVBUFLEN);
+        int readLen = read(clientFd, recvBuf, RECVBUFLEN);       
         if(readLen > 0)
         {
+            LOG(recvBuf);
+            const char *head =  "HTTP/1.1 200 ok\nContent-Length: 14\nContent-Type: application/json\nKeep-Alive: timeout=5, max=5\n\n{msg: \"hello\"}";
+            write(clientFd, head, strlen(head));
+            LOG(head);
+            
             char msgType;
             memcpy(&msgType, recvBuf, sizeof(msgType));
             // LOG("msgType: " << msgType);
@@ -88,7 +94,7 @@ void Server::dealConnect(int clientFd)
             }
             else if(msgType == MSG_ITEM_STATE)
             {
-
+                dealItemMsg(recvBuf, clientFd);
             }
         }
     }
@@ -158,5 +164,32 @@ void Server::sendMsg(const char *msg, int client, int msgLen)
     if(sendRet == -1)
     {
         LOG("send failed, error code : " << errno);
+    }
+}
+
+void Server::dealItemMsg(const char *msg, int client)
+{
+    if(msg == nullptr)
+    {
+        return;
+    }
+    //将消息分发给当前建立了连接的客户端
+    for(auto it : _clientFds)
+    {
+        if(it != client)
+        {
+            sendMsg(msg, it);
+        }
+    }
+
+    //记录消息
+    std::string itemName(msg + 1);
+    std::string itemState(msg + ITEMNAMELEN);
+    LOG("item name: " << itemName);
+    LOG("item state: " << itemState);
+    //要去解析state，如果是state_type是b和e，就保存
+    if(1)
+    {
+        
     }
 }
