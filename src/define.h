@@ -3,7 +3,7 @@
 * 此文件定义一些常量
 */
 
-const unsigned int SERVERPORT       = 6002;             //服务器监听端口
+const unsigned int SERVERPORT       = 8000;             //服务器监听端口
 
 const unsigned int RECVBUFLEN       = 1024;             //接收缓存大小
 
@@ -30,6 +30,6 @@ const char MSG_REPLY                = 'R';              //服务器回复
 const char MSG_ITEM_STATE           = 'S';              //图元状态
 
 //客户端类型
-const char* WINDOWS                 = "WINDOWS";        //windows端
+const char * const WINDOWS                 = "WINDOWS";        //windows端
 
-const char WEB                      = "WEB";            //web端
+const char * const WEB                     = "WEB";            //web端

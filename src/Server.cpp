@@ -88,6 +88,9 @@ void Server::dealConnect(int clientFd)
     else
     {
         LOG("undefine machine type");
+        std::string response;
+        _httphandler.setResponseContent("{\"error\": \"undefine machine type\"}", response);
+        sendMsg(response.c_str(), clientFd);
         return;
     }
 
@@ -104,11 +107,12 @@ void Server::dealConnect(int clientFd)
                 _httphandler.getRequestContent(recvBuf, content);
                 msg = content.c_str();
             }
-            // LOG("http request: " << content);
-            // std::string response;
-            // _httphandler.setResponseContent("\"user\": \"user1\"\n\"password\": \"12345\"", response);
-            // sendMsg(response.c_str(), clientFd);
-            if(strlen(msg) > 0)
+            LOG("http request: " << msg);
+            std::string response;
+            _httphandler.setResponseContent("\"user\": \"user1\"\n\"password\": \"12345\"", response);
+            sendMsg(response.c_str(), clientFd);
+            LOG(response.c_str());
+            if (strlen(msg) > 0)
             {
                 char msgType;
                 memcpy(&msgType, msg, sizeof(char));
