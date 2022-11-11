@@ -13,7 +13,7 @@ namespace Json
         std::string& operator[](std::string key);
         JsonObject &operator=(const JsonObject &object);
         std::string toStr();
-        
+        bool isEmpty();
 
     private:
         std::map<std::string, std::string> _content;

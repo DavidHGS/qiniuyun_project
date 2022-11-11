@@ -48,6 +48,11 @@ std::string JsonObject::toStr()
     return res;
 }
 
+bool JsonObject::isEmpty()
+{
+    return _content.empty();
+}
+
 JsonObject Json::toJsonObject(const char *msg)
 {
     JsonObject resObject;
