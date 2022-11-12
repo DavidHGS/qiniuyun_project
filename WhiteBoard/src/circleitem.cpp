@@ -1,7 +1,7 @@
 #include "circleitem.h"
 #include <QPainter>
 
-CircleItem::CircleItem() : BaseItem()
+CircleItem::CircleItem(int id) : BaseItem(id)
 {
 
 }

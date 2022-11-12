@@ -9,8 +9,9 @@
 #include <qmath.h>
 #include <QDebug>
 
-BaseItem::BaseItem(const QRectF &rect, QGraphicsItem *parent): QGraphicsItem(parent), _rect(rect)
+BaseItem::BaseItem(int id, const QRectF &rect, QGraphicsItem *parent): QGraphicsItem(parent), _rect(rect)
 {
+    _attribute._itemId = id;
    init();
 }
 
@@ -349,4 +350,19 @@ void BaseItem::rotateCursor(qreal angle)
         matrix.rotate(angle);;
 //        this->setCursor(this->cursor().bitmap()->transformed(matrix));
     }
+}
+
+Json::JsonObject BaseItem::getItemInfo()
+{
+    Json::JsonObject infoJson;
+    infoJson["\"pos\""] = QString("[%1,%2]").arg(_rect.x()).arg(_rect.y()).toStdString();
+    infoJson["\"width\""] = QString("%1").arg(_rect.width()).toStdString();
+    infoJson["\"height\""] = QString("%1").arg(_rect.height()).toStdString();
+    infoJson["\"angle\""] = QString("%1").arg(this->rotation()).toStdString();
+    infoJson["\"attribute\""] = QString("{\"id\":%1,\"lineWidth\":%2,\"lineWidth\":%3,\"lineColor\":[%4,%5,%6,%7],\"fillColor\":[%8,%9,%10,%11]}")\
+                                .arg(_attribute._itemId).arg(_attribute._boundingLineWidth).arg(_attribute._boundingLineType)\
+                                .arg(_attribute._boundingColor.redF()).arg(_attribute._boundingColor.greenF()).arg(_attribute._boundingColor.blueF()).arg(_attribute._boundingColor.alphaF())\
+                                .arg(_attribute._fillColor.red()).arg(_attribute._fillColor.greenF()).arg(_attribute._fillColor.blueF()).arg(_attribute._fillColor.alphaF()).toStdString();
+
+    return infoJson;
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <QGraphicsItem>
 #include "graphicsscene.h"
+#include "whiteboardclient.h"
 
 namespace Ui {
 class WhiteBoard;
@@ -41,6 +42,7 @@ private:
     QGraphicsItem* _curItem;
     Board::GraphicsType _curItemType;
     Board::Attribute _curAttribute;
+    WhiteBoardClient *_client;
 };
 
 #endif // WHITEBOARD_H

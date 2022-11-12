@@ -1,17 +1,22 @@
 #include "graphicsscene.h"
+#include "JsonObject.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <QCursor>
 #include <QMetaObject>
 #include <QDebug>
-
-GraphicsScene::GraphicsScene()
+#include <iostream>
+#include <string>
+GraphicsScene::GraphicsScene(WhiteBoardClient *client):
+    _client(client)
 {
     init();
 }
 
 void GraphicsScene::init()
 {
+    _itemId = -1;
+    _curGraphicsItem = nullptr;
 }
 
 void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
@@ -20,25 +25,39 @@ void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
     {
         return;
     }
+    Json::JsonObject msgJson;
+    msgJson["\"msg_type\""] = "\"S\"";
+    Json::JsonObject itemInfoJson;
     if(Board::GraphicsType::_Rect == type)
     {
-        RectItem *temp = new RectItem;
+        ++_itemId;
+        RectItem *temp = new RectItem(_itemId);
         _curGraphicsItem = temp;
         this->addItem(_curGraphicsItem);
         _graphicsItems[_curGraphicsItem] = Board::GraphicsType::_Rect;
         _curGraphicsItem->setPos(itemPos);
         connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
+
+        itemInfoJson = temp->getItemInfo();
     }
     if(Board::GraphicsType::_Circle == type)
     {
-        CircleItem *temp = new CircleItem;
+        ++_itemId;
+        CircleItem *temp = new CircleItem(_itemId);
         _curGraphicsItem = temp;
         _curGraphicsItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
         this->addItem(_curGraphicsItem);
         _graphicsItems[_curGraphicsItem] = Board::GraphicsType::_Circle;
         _curGraphicsItem->setPos(itemPos);
         connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
+
+        itemInfoJson = temp->getItemInfo();
     }
+    itemInfoJson["\"state_type\""] = "\"b\"";
+    msgJson["\"state\""] = itemInfoJson.toStr();
+    msgJson["\"item\""] = std::to_string(_curGraphicsItem->getAttribute()._itemId);
+    qDebug() << QString(msgJson.toStr().c_str());
+    _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
 }
 
 void GraphicsScene::drawItem(QGraphicsItem *item, Board::GraphicsType type, QPointF mouseCurPos)
@@ -133,7 +152,7 @@ void GraphicsScene::setMouseAction(Board::MouseAction mouseAction)
 
 void GraphicsScene::itemSelected()
 {
-    _curGraphicsItem = dynamic_cast<QGraphicsItem*>(sender());
+    _curGraphicsItem = dynamic_cast<BaseItem*>(sender());
     _curGraphicsType = _graphicsItems[_curGraphicsItem];
 //     qDebug() << "GraphicsScene INFO: itemSelected " << _curGraphicsItem;
     for(auto it : _graphicsItems)
