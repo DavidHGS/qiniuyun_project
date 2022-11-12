@@ -68,23 +68,89 @@ JsonObject Json::toJsonObject(const char *msg)
     msgString.erase(0, 1);
     msgString.erase(msgString.length() - 1, 1);
     // LOG(msgString);
-    std::stringstream msgStream(msgString);
-    while(!msgStream.eof())
+    for (int i = 0; i < msgString.length();)
     {
-        std::string tempMsg;
-        std::getline(msgStream, tempMsg, ',');
-        // LOG(tempMsg);
-        std::stringstream tempMsgStream(tempMsg);
         std::string key, value;
-        std::getline(tempMsgStream, key, ':');
-        std::getline(tempMsgStream, value);
-        // LOG(key);
-        // LOG(value);
-        if(key[0] == ' ')
+        //切分key
+        if (msgString[i] == '\"')
         {
-            key.erase(0, 1);
+            for (int j = i + 1; j < msgString.length(); ++j)
+            {
+                if(msgString[j] == '\"')
+                {
+                    key = msgString.substr(i, j - i + 1);
+                    // LOG("Key: " << key);
+                    i = j + 1;
+                    break;
+                }
+            }
+            if(key[0] != '\"' || key[key.length() - 1] != '\"')
+            {
+                LOG("Json format error");
+                return resObject;
+            }
+
+            //切分value
+            if(msgString[i] == ':')
+            {
+                ++i;
+                if(msgString[i] == '\"') //value是字符串
+                {
+                    for (int j = i + 1; j < msgString.length(); ++j)
+                    {
+                        if(msgString[j] == '\"')
+                        {
+                            value = msgString.substr(i, j - i + 1);
+                            i = j + 1;
+                            break;
+                        }
+                    }
+                }
+                else if(msgString[i] == '[')//value是数组
+                {
+                    for (int j = i + 1; j < msgString.length(); ++j)
+                    {
+                        if(msgString[j] == ']')
+                        {
+                            value = msgString.substr(i, j - i + 1);
+                            i = j + 1;
+                            break;
+                        }
+                    }
+                }
+                else if(msgString[i] == '{')//value是json
+                {
+                    for (int j = i + 1; j < msgString.length(); ++j)
+                    {
+                        if(msgString[j] == '}')
+                        {
+                            value = msgString.substr(i, j - i + 1);
+                            i = j + 1;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    int j;
+                    for (j = i + 1; j < msgString.length(); ++j)
+                    {
+                        if(msgString[j] == ',')
+                        {
+                            break;
+                        }
+                    }
+                    value = msgString.substr(i, j - i);
+                }
+                // LOG(value);
+                resObject[key] = value;
+            }
         }
-        resObject[key] = value;
+        else
+        {
+            ++i;
+        }
+            
     }
 
     return resObject;
