@@ -21,7 +21,7 @@ Server::Server()
 Server::~Server()
 {
     LOG("delete");
-    close(_listenFd);
+    shutdown(_listenFd, SHUT_RDWR);
 }
 
 void Server::init()
@@ -57,7 +57,7 @@ void Server::run()
             int clientFd = accept(_listenFd, (sockaddr *)&clientInfo, &clientInfoLen);
             if(clientFd != -1)
             {
-                LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected");
+                LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected" << clientInfo.sin_port);
                 std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd); //创建线程去处理和客户端的连接
                 dealThread->detach();//线程自己管理生存周期
             }
@@ -79,6 +79,7 @@ void Server::dealConnect(int clientFd)
     read(clientFd, recvBuf, RECVBUFLEN);
     std::string machineType;
     _httphandler.getRequestContent(recvBuf, machineType);
+    LOG(machineType);
     Json::JsonObject json = Json::toJsonObject(machineType.c_str());
     if (json["\"MachineType\""] == WINDOWS)
     {
@@ -117,6 +118,7 @@ void Server::dealConnect(int clientFd)
             // LOG(response.c_str());
             if (strlen(msg) > 0)
             {
+                LOG("msg: " << msg);
                 Json::JsonObject msgJson = Json::toJsonObject(msg);
                 LOG("msgType: " << msgJson["\"msg_type\""]);
                 std::string msgType = msgJson["\"msg_type\""];

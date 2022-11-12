@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <sstream>
 #include <iostream>
+#include <string>
 
 #define LOG(s) (std::cout << "HttpHandler INFO: " << s << std::endl << std::endl) 
 
@@ -26,14 +27,29 @@ void HttpHandler::getRequestContent(const char *httpRequest, std::string &conten
     request << httpRequest;
     LOG(request.str());
     std::string temp;
-    while(getline(request, temp))
+    while(std::getline(request, temp))
     {
-        if(temp.length() == 0)
+        if(temp.length() > 1)
         {
+            temp.erase(temp.length() - 1); //除去最后的'\r'
+        }
+        // LOG("temp: " << temp);
+        if(temp == "{")
+        {
+            while(temp != "}")
+            {
+                content += temp;
+                getline(request, temp);
+                if(temp.length() > 1)
+                {
+                    temp.erase(temp.length() - 1);
+                }
+            }
+            content += temp;
             break;
         }
     }
-    getline(request, content);
+    LOG("content: " << content);
 }
 
 void HttpHandler::setResponseContent(const char *content, std::string &httpResponse)
@@ -52,3 +68,4 @@ void HttpHandler::setResponseContent(const char *content, std::string &httpRespo
 
     // LOG(httpResponse);
 }
+

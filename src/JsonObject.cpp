@@ -80,6 +80,10 @@ JsonObject Json::toJsonObject(const char *msg)
         std::getline(tempMsgStream, value);
         // LOG(key);
         // LOG(value);
+        if(key[0] == ' ')
+        {
+            key.erase(0, 1);
+        }
         resObject[key] = value;
     }
 
