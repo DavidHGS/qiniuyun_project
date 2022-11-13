@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 namespace Json
 {
     class JsonObject
@@ -14,6 +15,7 @@ namespace Json
         JsonObject &operator=(const JsonObject &object);
         std::string toStr();
         bool isEmpty();
+        void strToArry(std::vector<double> &arr, std::string value);
 
     private:
         std::map<std::string, std::string> _content;
