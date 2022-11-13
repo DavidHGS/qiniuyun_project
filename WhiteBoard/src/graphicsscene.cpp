@@ -18,10 +18,12 @@ void GraphicsScene::init()
     _itemId = -1;
     _curGraphicsItem = nullptr;
     _mouseMove = false;
+    connect(_client, SIGNAL(readData(const char*,int)), this, SLOT(dealServerInfo(const char*,int)));
 }
 
 void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
 {
+    qDebug() << "itemPos: " << itemPos;
     if(Board::GraphicsType::_NoneType == type)
     {
         return;
@@ -47,7 +49,6 @@ void GraphicsScene::createItem(Board::GraphicsType type, QPointF itemPos)
         _curGraphicsItem->setPos(itemPos);
         connect(temp, SIGNAL(selected()), this, SLOT(itemSelected()));
     }
-    sendItemInfo(MSG_ITEM_STATE, ITEM_BEGIN, _curGraphicsItem);
 }
 
 void GraphicsScene::drawItem(BaseItem *item, Board::GraphicsType type, QPointF mouseCurPos)
@@ -90,7 +91,6 @@ void GraphicsScene::drawItem(BaseItem *item, Board::GraphicsType type, QPointF m
         circleItem->setRect(itemRect);
         emit circleItem->selected();
     }
-    sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, item);
 }
 
 void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -102,10 +102,20 @@ void GraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if(_mouseAction == Board::MouseAction::_Draw)
         {
             createItem(_curGraphicsType, _mouseStartPos);
+            Json::JsonObject msgJson;
+            msgJson["\"msg_type\""] = MSG_ITEM_STATE;
+            msgJson["\"itemType\""] = std::to_string(_curGraphicsType);
+            Json::JsonObject itemInfoJson;
+            itemInfoJson = _curGraphicsItem->getItemInfo();
+            itemInfoJson["\"pos\""] = QString("[%1,%2]").arg(_mouseStartPos.x()).arg(_mouseStartPos.y()).toStdString();
+            itemInfoJson["\"state_type\""] = ITEM_BEGIN;
+            msgJson["\"state\""] = itemInfoJson.toStr();
+            msgJson["\"item\""] = std::to_string(_curGraphicsItem->getAttribute()._itemId);
+            _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
+
         }
         else
         {
-
             QGraphicsScene::mousePressEvent(event);
         }
     }
@@ -122,6 +132,7 @@ void GraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         {
             drawItem(_curGraphicsItem, _curGraphicsType, mouseCurPos);
             _mouseMove = true;
+            sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, _curGraphicsItem);
         }
         else
         {
@@ -179,6 +190,7 @@ void GraphicsScene::sendItemInfo(const char *msg_type, const char *state_type, B
 {
     Json::JsonObject msgJson;
     msgJson["\"msg_type\""] = msg_type;
+    msgJson["\"itemType\""] = std::to_string(_graphicsItems[item]);
     Json::JsonObject itemInfoJson;
     itemInfoJson = item->getItemInfo();
     itemInfoJson["\"state_type\""] = state_type;
@@ -186,4 +198,51 @@ void GraphicsScene::sendItemInfo(const char *msg_type, const char *state_type, B
     msgJson["\"item\""] = std::to_string(_curGraphicsItem->getAttribute()._itemId);
     _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
     qDebug() << QString(msgJson.toStr().c_str());
+}
+
+void GraphicsScene::dealServerInfo(const char *info, int len)
+{
+    qDebug() << info;
+    Json::JsonObject infoJson = Json::toJsonObject(info);
+    if(infoJson["\"msg_type\""] == MSG_ITEM_STATE)
+    {
+        std::string id = infoJson["\"item\""];
+        auto it = _graphicsItems.begin();
+        //item已经存在，修改属性
+        for(it = _graphicsItems.begin(); it != _graphicsItems.end(); ++it)
+        {
+            BaseItem *item = it->first;
+            Board::Attribute attr = item->getAttribute();
+            if(std::to_string(attr._itemId) == id)
+            {
+                Json::JsonObject stateJson = Json::toJsonObject(infoJson["\"state\""].c_str());
+                std::vector<double> pos;
+                stateJson.strToArry(pos, stateJson["\"pos\""]);
+                qreal width = atof(stateJson["\"width\""].c_str());
+                qreal height = atof(stateJson["\"height\""].c_str());
+                qreal angle = atof(stateJson["\"angle\""].c_str());
+                Json::JsonObject attrJosn = Json::toJsonObject(stateJson["\"attribute\""].c_str());
+                int lineWidth = atoi(attrJosn["\"lineWidth\""].c_str());
+                int lineType = atoi(attrJosn["\"lineType\""].c_str());
+                std::vector<double> lineColor, fillColor;
+                attrJosn.strToArry(lineColor, attrJosn["\"lineColor\""]);
+                attrJosn.strToArry(fillColor, attrJosn["\"fillColor\""]);
+                attr._boundingLineWidth = lineWidth;
+                attr._boundingLineType =  (Qt::PenStyle)lineType;
+                attr._boundingColor = QColor(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                attr._fillColor = QColor(fillColor[0], fillColor[1],fillColor[2], fillColor[3]);
+                item->setRect(QRectF(pos[0], pos[1], width, height));
+                item->setTransformOriginPoint(item->boundingRect().center());
+                item->setRotation(angle);
+                item->setAttribute(attr);
+                return;
+            }
+        }
+        //item不存在，先创建
+        int itemType = atoi(infoJson["\"itemType\""].c_str());
+        Json::JsonObject stateJson = Json::toJsonObject(infoJson["\"state\""].c_str());
+        std::vector<double> pos;
+        stateJson.strToArry(pos, stateJson["\"pos\""]);
+        createItem((Board::GraphicsType)itemType, QPointF(pos[0], pos[1]));
+    }
 }

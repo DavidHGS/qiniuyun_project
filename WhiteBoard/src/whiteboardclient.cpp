@@ -36,8 +36,10 @@ void WhiteBoardClient::connectToServer(QString serverIp, unsigned int serverPort
 void WhiteBoardClient::readSlot()
 {
     memset(buffRecv, 0, SENDBUFLEN);
-    _clientFd->read(buffRecv, RECVBUFLEN);
-    emit readData(buffRecv);
+    while(_clientFd->read(buffRecv, RECVBUFLEN) > 0)
+    {
+        emit readData(buffRecv);
+    }
 }
 
 void WhiteBoardClient::sendData(const char *data, int len)

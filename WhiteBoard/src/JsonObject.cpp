@@ -1,6 +1,8 @@
 #include "JsonObject.h"
 #include <sstream>
 #include <iostream>
+#include <string>
+#include <stack>
 
 #define LOG(s) (std::cout << "JsonObject INFO: " << s << std::endl \
                           << std::endl)
@@ -120,13 +122,23 @@ JsonObject Json::toJsonObject(const char *msg)
                 }
                 else if(msgString[i] == '{')//value是json
                 {
+                    std::stack<char> st;
+                    st.push(msgString[i]);
                     for (int j = i + 1; j < msgString.length(); ++j)
                     {
-                        if(msgString[j] == '}')
+                        if(msgString[j] == '{')
                         {
-                            value = msgString.substr(i, j - i + 1);
-                            i = j + 1;
-                            break;
+                            st.push(msgString[j]);
+                        }
+                        else if(msgString[j] == '}')
+                        {
+                            st.pop();
+                            if(st.empty())
+                            {
+                                value = msgString.substr(i, j - i + 1);
+                                i = j + 1;
+                                break;
+                            }
                         }
                     }
                 }
@@ -154,4 +166,26 @@ JsonObject Json::toJsonObject(const char *msg)
     }
 
     return resObject;
+}
+
+void JsonObject::strToArry(std::vector<double> &arr, std::string value)
+{
+    arr.clear();
+    int len = value.length();
+    if (value[0] == '[' && value[len - 1] == ']')
+    {
+        value.erase(0, 1);
+        value.erase(len - 1, 0);
+    }
+    else
+    {
+        return;
+    }
+    std::stringstream valueStream(value);
+    while(!valueStream.eof())
+    {
+        std::string subValue;
+        std::getline(valueStream, subValue, ',');
+        arr.emplace_back(atof(subValue.c_str()));
+    }
 }

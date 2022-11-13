@@ -31,6 +31,7 @@ signals:
     void itemSelected(QGraphicsItem*, Board::GraphicsType);
 private slots:
     void itemSelected();
+    void dealServerInfo(const char* info, int len);
 
 private:
     std::map<BaseItem*, Board::GraphicsType> _graphicsItems;

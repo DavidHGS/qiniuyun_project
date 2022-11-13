@@ -14,10 +14,12 @@ public:
     explicit BaseItem(int id, WhiteBoardClient *client, const QRectF& rect = QRectF(), QGraphicsItem *parent = nullptr);
     ~BaseItem();
     void setRect(const QRectF &rect);//设置绘制图形的边界矩形
+    void rotate(qreal angle);
     void setAttribute(Board::Attribute attr);//设置要绘制的图形属性
     Board::Attribute getAttribute();//返回图形属性
     Json::JsonObject getItemInfo();
     void sendItemInfo(const char *msg_type, const char *state_type, BaseItem *item);
+    virtual QRectF boundingRect() const;
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
@@ -26,14 +28,14 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual QRectF boundingRect() const;
+
 private:
     void init();
     void updateHandleArea(QRectF rect);
     Board::MouseHandlePos getHandleArea(QPointF mousePos);
     void adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle);
-    void rotate(qreal angle);
     void rotateCursor(qreal angle);
+
 signals:
     void selected();
     void rectChange(QRectF rect);

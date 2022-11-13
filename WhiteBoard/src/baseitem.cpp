@@ -15,7 +15,6 @@ BaseItem::BaseItem(int id, WhiteBoardClient *client, const QRectF &rect, QGraphi
     _client(client)
 {
     _attribute._itemId = id;
-    _mouseMove = false;
    init();
 }
 
@@ -49,6 +48,7 @@ Board::Attribute BaseItem::getAttribute()
 
 void BaseItem::init()
 {
+    _mouseMove = false;
     _handleAreasize = QSizeF(20.0, 20.0);
     _lineLength = 30;
     _radius = 15;
@@ -190,7 +190,6 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             if(_curHandle == Board::MouseHandlePos::_Rotate)
             {
                 QPointF rotateCenter = _rect.center();
-                this->setTransformOriginPoint(rotateCenter);
                 QLineF l1 = QLineF(rotateCenter, _mousePressPos);
                 QLineF l2 = QLineF(rotateCenter, event->pos());
                 qreal angle = l2.angleTo(l1);
@@ -200,12 +199,20 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, this);
             return;
         }
-        sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, this);
     }
     if(this->isSelected())
     {
         _mouseMove = true;
         QGraphicsItem::mouseMoveEvent(event);
+        Json::JsonObject msgJson;
+        msgJson["\"msg_type\""] = MSG_ITEM_STATE;
+        Json::JsonObject itemInfoJson;
+        itemInfoJson = getItemInfo();
+        itemInfoJson["\"pos\""] = QString("[%1,%2]").arg(this->scenePos().x()).arg(this->scenePos().y()).toStdString();
+        itemInfoJson["\"state_type\""] = ITEM_BEGIN;
+        msgJson["\"state\""] = itemInfoJson.toStr();
+        msgJson["\"item\""] = std::to_string(_attribute._itemId);
+        _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
     }
 }
 
@@ -312,10 +319,6 @@ void BaseItem::adjustRectSize(QPointF mousePos, Board::MouseHandlePos curHandle)
     }
 }
 
-
-
-
-
 void BaseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 //    qDebug() << "BaseItem::paint";
@@ -347,6 +350,7 @@ QRectF BaseItem::boundingRect() const
 
 void BaseItem::rotate(qreal angle)
 {
+    this->setTransformOriginPoint(_rect.center());
     qreal rotateAngle = this->rotation() + angle;
     if(rotateAngle > 360.0)
     {
@@ -369,14 +373,15 @@ void BaseItem::rotateCursor(qreal angle)
 Json::JsonObject BaseItem::getItemInfo()
 {
     Json::JsonObject infoJson;
-    infoJson["\"pos\""] = QString("[%1,%2]").arg(this->pos().x()).arg(this->pos().y()).toStdString();
+    infoJson["\"pos\""] = QString("[%1,%2]").arg(_rect.x()).arg(_rect.y()).toStdString();
+    qDebug() << "pos: " <<this->pos().x() <<", " << this->pos().y();
     infoJson["\"width\""] = QString("%1").arg(_rect.width()).toStdString();
     infoJson["\"height\""] = QString("%1").arg(_rect.height()).toStdString();
     infoJson["\"angle\""] = QString("%1").arg(this->rotation()).toStdString();
-    infoJson["\"attribute\""] = QString("{\"id\":%1,\"lineWidth\":%2,\"lineWidth\":%3,\"lineColor\":[%4,%5,%6,%7],\"fillColor\":[%8,%9,%10,%11]}")\
+    infoJson["\"attribute\""] = QString("{\"id\":%1,\"lineWidth\":%2,\"lineType\":%3,\"lineColor\":[%4,%5,%6,%7],\"fillColor\":[%8,%9,%10,%11]}")\
                                 .arg(_attribute._itemId).arg(_attribute._boundingLineWidth).arg(_attribute._boundingLineType)\
-                                .arg(_attribute._boundingColor.redF()).arg(_attribute._boundingColor.greenF()).arg(_attribute._boundingColor.blueF()).arg(_attribute._boundingColor.alphaF())\
-                                .arg(_attribute._fillColor.red()).arg(_attribute._fillColor.greenF()).arg(_attribute._fillColor.blueF()).arg(_attribute._fillColor.alphaF()).toStdString();
+                                .arg(_attribute._boundingColor.red()).arg(_attribute._boundingColor.green()).arg(_attribute._boundingColor.blue()).arg(_attribute._boundingColor.alpha())\
+                                .arg(_attribute._fillColor.red()).arg(_attribute._fillColor.green()).arg(_attribute._fillColor.blue()).arg(_attribute._fillColor.alpha()).toStdString();
 
     return infoJson;
 }
@@ -391,5 +396,6 @@ void BaseItem::sendItemInfo(const char *msg_type, const char *state_type, BaseIt
     msgJson["\"state\""] = itemInfoJson.toStr();
     msgJson["\"item\""] = std::to_string(_attribute._itemId);
     _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
-    qDebug() << QString(msgJson.toStr().c_str());
+//    qDebug() << QString(msgJson.toStr().c_str());
 }
+
