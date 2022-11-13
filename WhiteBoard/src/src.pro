@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,7 +29,9 @@ SOURCES += \
     graphicsscene.cpp \
     rectitem.cpp \
     circleitem.cpp \
-    baseitem.cpp
+    baseitem.cpp \
+    whiteboardclient.cpp \
+    JsonObject.cpp
 
 HEADERS += \
         whiteboard.h \
@@ -37,7 +39,9 @@ HEADERS += \
     rectitem.h \
     define.h \
     circleitem.h \
-    baseitem.h
+    baseitem.h \
+    whiteboardclient.h \
+    JsonObject.h
 
 FORMS += \
         whiteboard.ui

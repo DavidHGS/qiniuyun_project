@@ -1,7 +1,8 @@
 #include "circleitem.h"
 #include <QPainter>
 
-CircleItem::CircleItem() : BaseItem()
+CircleItem::CircleItem(int id, WhiteBoardClient *client) :
+    BaseItem(id, client)
 {
 
 }

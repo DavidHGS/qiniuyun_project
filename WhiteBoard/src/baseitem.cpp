@@ -9,8 +9,13 @@
 #include <qmath.h>
 #include <QDebug>
 
-BaseItem::BaseItem(const QRectF &rect, QGraphicsItem *parent): QGraphicsItem(parent), _rect(rect)
+BaseItem::BaseItem(int id, WhiteBoardClient *client, const QRectF &rect, QGraphicsItem *parent):
+    QGraphicsItem(parent),
+    _rect(rect),
+    _client(client)
 {
+    _attribute._itemId = id;
+    _mouseMove = false;
    init();
 }
 
@@ -191,11 +196,15 @@ void BaseItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 qreal angle = l2.angleTo(l1);
                 rotate(angle);
             }
+            _mouseMove = true;
+            sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, this);
             return;
         }
+        sendItemInfo(MSG_ITEM_STATE, ITEM_MIDDLE, this);
     }
     if(this->isSelected())
     {
+        _mouseMove = true;
         QGraphicsItem::mouseMoveEvent(event);
     }
 }
@@ -207,6 +216,7 @@ void BaseItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //        qDebug() << "BaseItem INFO: is selected ";
         this->setSelected(true);
         emit selected();
+        sendItemInfo(MSG_ITEM_STATE, ITEM_BEGIN, this);
     }
     if(this->isSelected())
     {
@@ -239,7 +249,12 @@ void BaseItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             this->setTransformOriginPoint(_rect.center());
 
             this->update();
-            this->setSelected(true);
+            this->setSelected(true);           
+        }
+        if(_mouseMove == true)
+        {
+            sendItemInfo(MSG_ITEM_STATE, ITEM_END, this);
+            _mouseMove = false;
         }
     }
 
@@ -349,4 +364,32 @@ void BaseItem::rotateCursor(qreal angle)
         matrix.rotate(angle);;
 //        this->setCursor(this->cursor().bitmap()->transformed(matrix));
     }
+}
+
+Json::JsonObject BaseItem::getItemInfo()
+{
+    Json::JsonObject infoJson;
+    infoJson["\"pos\""] = QString("[%1,%2]").arg(this->pos().x()).arg(this->pos().y()).toStdString();
+    infoJson["\"width\""] = QString("%1").arg(_rect.width()).toStdString();
+    infoJson["\"height\""] = QString("%1").arg(_rect.height()).toStdString();
+    infoJson["\"angle\""] = QString("%1").arg(this->rotation()).toStdString();
+    infoJson["\"attribute\""] = QString("{\"id\":%1,\"lineWidth\":%2,\"lineWidth\":%3,\"lineColor\":[%4,%5,%6,%7],\"fillColor\":[%8,%9,%10,%11]}")\
+                                .arg(_attribute._itemId).arg(_attribute._boundingLineWidth).arg(_attribute._boundingLineType)\
+                                .arg(_attribute._boundingColor.redF()).arg(_attribute._boundingColor.greenF()).arg(_attribute._boundingColor.blueF()).arg(_attribute._boundingColor.alphaF())\
+                                .arg(_attribute._fillColor.red()).arg(_attribute._fillColor.greenF()).arg(_attribute._fillColor.blueF()).arg(_attribute._fillColor.alphaF()).toStdString();
+
+    return infoJson;
+}
+
+void BaseItem::sendItemInfo(const char *msg_type, const char *state_type, BaseItem *item)
+{
+    Json::JsonObject msgJson;
+    msgJson["\"msg_type\""] = msg_type;
+    Json::JsonObject itemInfoJson;
+    itemInfoJson = item->getItemInfo();
+    itemInfoJson["\"state_type\""] = state_type;
+    msgJson["\"state\""] = itemInfoJson.toStr();
+    msgJson["\"item\""] = std::to_string(_attribute._itemId);
+    _client->sendData(msgJson.toStr().c_str(), strlen(msgJson.toStr().c_str()));
+    qDebug() << QString(msgJson.toStr().c_str());
 }

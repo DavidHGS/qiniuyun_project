@@ -7,7 +7,7 @@ class CircleItem : public BaseItem
 {
     Q_OBJECT
 public:
-    explicit CircleItem();
+    explicit CircleItem(int id, WhiteBoardClient *client);
     ~CircleItem();
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

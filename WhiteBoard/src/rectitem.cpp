@@ -10,7 +10,8 @@
 #include <QBitmap>
 #include <QDebug>
 
-RectItem::RectItem()
+RectItem::RectItem(int id, WhiteBoardClient *client):
+    BaseItem(id, client)
 {
 
 }

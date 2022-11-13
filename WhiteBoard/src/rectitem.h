@@ -7,7 +7,7 @@ class RectItem : public BaseItem
 {
     Q_OBJECT
 public:
-    explicit RectItem();
+    explicit RectItem(int id, WhiteBoardClient *client);
     ~RectItem();
 
 private:

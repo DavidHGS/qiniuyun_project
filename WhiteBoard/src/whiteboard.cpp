@@ -21,11 +21,13 @@ WhiteBoard::~WhiteBoard()
 
 void WhiteBoard::init()
 {
-    _scene = new GraphicsScene();
+    _client = new WhiteBoardClient;
+    _scene = new GraphicsScene(_client);
     _scene->setSceneRect(0, 0, ui->graphicsView_whiteBoard->width(), ui->graphicsView_whiteBoard->height());
     ui->graphicsView_whiteBoard->setScene(_scene);
     ui->graphicsView_whiteBoard->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     connect(_scene, SIGNAL(itemSelected(QGraphicsItem*,Board::GraphicsType)), this, SLOT(itemSelected(QGraphicsItem*,Board::GraphicsType)));
+    _client->connectToServer(SERVERIP, SERVERPORT);
 }
 
 void WhiteBoard::on_radioButton_rect_clicked()

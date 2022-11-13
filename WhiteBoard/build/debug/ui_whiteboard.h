@@ -24,6 +24,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
@@ -42,7 +43,7 @@ public:
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout_8;
-    QRadioButton *radioButton;
+    QRadioButton *radioButton_choose;
     QRadioButton *radioButton_rect;
     QRadioButton *radioButton_circle;
     QSpacerItem *horizontalSpacer_2;
@@ -55,25 +56,25 @@ public:
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label;
-    QComboBox *comboBox_lineWidth;
+    QSpinBox *spinBox_lineWidth;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_2;
-    QComboBox *comboBox;
+    QComboBox *comboBox_lineType;
     QHBoxLayout *horizontalLayout_5;
     QLabel *label_3;
-    QPushButton *pushButton_lineColor;
+    QPushButton *pushButton_boundingColor;
     QHBoxLayout *horizontalLayout_6;
     QLabel *label_4;
-    QPushButton *pushButton_3;
+    QPushButton *pushButton_fillColor;
     QSpacerItem *verticalSpacer_2;
     QWidget *tab_text;
     QVBoxLayout *verticalLayout_3;
     QHBoxLayout *horizontalLayout_10;
     QLabel *label_5;
-    QComboBox *comboBox_3;
+    QComboBox *comboBox_fontType;
     QHBoxLayout *horizontalLayout_9;
     QLabel *label_6;
-    QComboBox *comboBox_2;
+    QComboBox *comboBox_fontSizze;
     QSpacerItem *verticalSpacer;
     QHBoxLayout *horizontalLayout_2;
     QSpacerItem *horizontalSpacer;
@@ -112,10 +113,10 @@ public:
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
-        radioButton = new QRadioButton(centralWidget);
-        radioButton->setObjectName(QStringLiteral("radioButton"));
+        radioButton_choose = new QRadioButton(centralWidget);
+        radioButton_choose->setObjectName(QStringLiteral("radioButton_choose"));
 
-        horizontalLayout_8->addWidget(radioButton);
+        horizontalLayout_8->addWidget(radioButton_choose);
 
         radioButton_rect = new QRadioButton(centralWidget);
         radioButton_rect->setObjectName(QStringLiteral("radioButton_rect"));
@@ -169,10 +170,12 @@ public:
 
         horizontalLayout_3->addWidget(label);
 
-        comboBox_lineWidth = new QComboBox(tab_style);
-        comboBox_lineWidth->setObjectName(QStringLiteral("comboBox_lineWidth"));
+        spinBox_lineWidth = new QSpinBox(tab_style);
+        spinBox_lineWidth->setObjectName(QStringLiteral("spinBox_lineWidth"));
+        spinBox_lineWidth->setEnabled(false);
+        spinBox_lineWidth->setMaximum(10);
 
-        horizontalLayout_3->addWidget(comboBox_lineWidth);
+        horizontalLayout_3->addWidget(spinBox_lineWidth);
 
         horizontalLayout_3->setStretch(0, 1);
         horizontalLayout_3->setStretch(1, 2);
@@ -187,10 +190,11 @@ public:
 
         horizontalLayout_4->addWidget(label_2);
 
-        comboBox = new QComboBox(tab_style);
-        comboBox->setObjectName(QStringLiteral("comboBox"));
+        comboBox_lineType = new QComboBox(tab_style);
+        comboBox_lineType->setObjectName(QStringLiteral("comboBox_lineType"));
+        comboBox_lineType->setEnabled(false);
 
-        horizontalLayout_4->addWidget(comboBox);
+        horizontalLayout_4->addWidget(comboBox_lineType);
 
         horizontalLayout_4->setStretch(0, 1);
         horizontalLayout_4->setStretch(1, 2);
@@ -205,11 +209,12 @@ public:
 
         horizontalLayout_5->addWidget(label_3);
 
-        pushButton_lineColor = new QPushButton(tab_style);
-        pushButton_lineColor->setObjectName(QStringLiteral("pushButton_lineColor"));
-        pushButton_lineColor->setStyleSheet(QStringLiteral("background-color: rgb(0, 0, 0);"));
+        pushButton_boundingColor = new QPushButton(tab_style);
+        pushButton_boundingColor->setObjectName(QStringLiteral("pushButton_boundingColor"));
+        pushButton_boundingColor->setEnabled(false);
+        pushButton_boundingColor->setStyleSheet(QStringLiteral("background-color: rgb(0, 0, 0);"));
 
-        horizontalLayout_5->addWidget(pushButton_lineColor);
+        horizontalLayout_5->addWidget(pushButton_boundingColor);
 
         horizontalLayout_5->setStretch(0, 1);
         horizontalLayout_5->setStretch(1, 2);
@@ -224,11 +229,12 @@ public:
 
         horizontalLayout_6->addWidget(label_4);
 
-        pushButton_3 = new QPushButton(tab_style);
-        pushButton_3->setObjectName(QStringLiteral("pushButton_3"));
-        pushButton_3->setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
+        pushButton_fillColor = new QPushButton(tab_style);
+        pushButton_fillColor->setObjectName(QStringLiteral("pushButton_fillColor"));
+        pushButton_fillColor->setEnabled(false);
+        pushButton_fillColor->setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
 
-        horizontalLayout_6->addWidget(pushButton_3);
+        horizontalLayout_6->addWidget(pushButton_fillColor);
 
         horizontalLayout_6->setStretch(0, 1);
         horizontalLayout_6->setStretch(1, 2);
@@ -254,10 +260,10 @@ public:
 
         horizontalLayout_10->addWidget(label_5);
 
-        comboBox_3 = new QComboBox(tab_text);
-        comboBox_3->setObjectName(QStringLiteral("comboBox_3"));
+        comboBox_fontType = new QComboBox(tab_text);
+        comboBox_fontType->setObjectName(QStringLiteral("comboBox_fontType"));
 
-        horizontalLayout_10->addWidget(comboBox_3);
+        horizontalLayout_10->addWidget(comboBox_fontType);
 
         horizontalLayout_10->setStretch(0, 1);
         horizontalLayout_10->setStretch(1, 2);
@@ -272,10 +278,10 @@ public:
 
         horizontalLayout_9->addWidget(label_6);
 
-        comboBox_2 = new QComboBox(tab_text);
-        comboBox_2->setObjectName(QStringLiteral("comboBox_2"));
+        comboBox_fontSizze = new QComboBox(tab_text);
+        comboBox_fontSizze->setObjectName(QStringLiteral("comboBox_fontSizze"));
 
-        horizontalLayout_9->addWidget(comboBox_2);
+        horizontalLayout_9->addWidget(comboBox_fontSizze);
 
         horizontalLayout_9->setStretch(0, 1);
         horizontalLayout_9->setStretch(1, 2);
@@ -330,12 +336,11 @@ public:
         statusBar->setObjectName(QStringLiteral("statusBar"));
         WhiteBoard->setStatusBar(statusBar);
         QWidget::setTabOrder(pushButton, pushButton_2);
-        QWidget::setTabOrder(pushButton_2, comboBox_lineWidth);
-        QWidget::setTabOrder(comboBox_lineWidth, comboBox);
-        QWidget::setTabOrder(comboBox, pushButton_lineColor);
-        QWidget::setTabOrder(pushButton_lineColor, pushButton_3);
-        QWidget::setTabOrder(pushButton_3, tabWidget);
-        QWidget::setTabOrder(tabWidget, comboBox_2);
+        QWidget::setTabOrder(pushButton_2, comboBox_lineType);
+        QWidget::setTabOrder(comboBox_lineType, pushButton_boundingColor);
+        QWidget::setTabOrder(pushButton_boundingColor, pushButton_fillColor);
+        QWidget::setTabOrder(pushButton_fillColor, tabWidget);
+        QWidget::setTabOrder(tabWidget, comboBox_fontSizze);
 
         menuBar->addAction(menu->menuAction());
         menu->addAction(action_export);
@@ -356,35 +361,31 @@ public:
         action_import->setText(QApplication::translate("WhiteBoard", "\345\257\274\345\205\245", Q_NULLPTR));
         action_rect->setText(QApplication::translate("WhiteBoard", "\347\237\251\345\275\242", Q_NULLPTR));
         action_circle->setText(QApplication::translate("WhiteBoard", "\345\234\206\345\275\242", Q_NULLPTR));
-        radioButton->setText(QApplication::translate("WhiteBoard", "\346\211\213", Q_NULLPTR));
+        radioButton_choose->setText(QApplication::translate("WhiteBoard", "\346\211\213", Q_NULLPTR));
         radioButton_rect->setText(QApplication::translate("WhiteBoard", "\347\237\251\345\275\242", Q_NULLPTR));
         radioButton_circle->setText(QApplication::translate("WhiteBoard", "\345\234\206", Q_NULLPTR));
         label->setText(QApplication::translate("WhiteBoard", "\347\272\277\345\256\275\357\274\232", Q_NULLPTR));
-        comboBox_lineWidth->clear();
-        comboBox_lineWidth->insertItems(0, QStringList()
-         << QApplication::translate("WhiteBoard", "1px", Q_NULLPTR)
-         << QApplication::translate("WhiteBoard", "2px", Q_NULLPTR)
-        );
+        spinBox_lineWidth->setSuffix(QApplication::translate("WhiteBoard", " px", Q_NULLPTR));
         label_2->setText(QApplication::translate("WhiteBoard", "\347\272\277\345\275\242\357\274\232", Q_NULLPTR));
-        comboBox->clear();
-        comboBox->insertItems(0, QStringList()
+        comboBox_lineType->clear();
+        comboBox_lineType->insertItems(0, QStringList()
          << QApplication::translate("WhiteBoard", "\345\256\236\347\272\277", Q_NULLPTR)
          << QApplication::translate("WhiteBoard", "\350\231\232\347\272\277", Q_NULLPTR)
         );
         label_3->setText(QApplication::translate("WhiteBoard", "\347\272\277\350\211\262\357\274\232", Q_NULLPTR));
-        pushButton_lineColor->setText(QString());
+        pushButton_boundingColor->setText(QString());
         label_4->setText(QApplication::translate("WhiteBoard", "\345\241\253\345\205\205\357\274\232", Q_NULLPTR));
-        pushButton_3->setText(QString());
+        pushButton_fillColor->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_style), QApplication::translate("WhiteBoard", "\346\240\267\345\274\217", Q_NULLPTR));
         label_5->setText(QApplication::translate("WhiteBoard", "\345\255\227\344\275\223\357\274\232", Q_NULLPTR));
-        comboBox_3->clear();
-        comboBox_3->insertItems(0, QStringList()
+        comboBox_fontType->clear();
+        comboBox_fontType->insertItems(0, QStringList()
          << QApplication::translate("WhiteBoard", "\345\276\256\350\275\257\351\233\205\351\273\221", Q_NULLPTR)
          << QApplication::translate("WhiteBoard", "\345\256\213\344\275\223", Q_NULLPTR)
         );
         label_6->setText(QApplication::translate("WhiteBoard", "\345\255\227\345\217\267\357\274\232", Q_NULLPTR));
-        comboBox_2->clear();
-        comboBox_2->insertItems(0, QStringList()
+        comboBox_fontSizze->clear();
+        comboBox_fontSizze->insertItems(0, QStringList()
          << QApplication::translate("WhiteBoard", "1px", Q_NULLPTR)
          << QApplication::translate("WhiteBoard", "2px", Q_NULLPTR)
         );
