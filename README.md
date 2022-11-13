@@ -6,7 +6,7 @@
 
    qt前端模块——分支：jianglinxin_branch
 
-   cpp后端——分支：david_branch
+   cpp后端——分支：WhiteBoardServer
 
    web前端模块——分支：david_branch
 
