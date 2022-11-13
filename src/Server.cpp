@@ -57,7 +57,7 @@ void Server::run()
             int clientFd = accept(_listenFd, (sockaddr *)&clientInfo, &clientInfoLen);
             if(clientFd != -1)
             {
-                LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected" << clientInfo.sin_port);
+                LOG(inet_ntoa(clientInfo.sin_addr) << " cnonected, port: " << clientInfo.sin_port);
                 std::shared_ptr<std::thread> dealThread = std::make_shared<std::thread>(&Server::dealConnect, this, clientFd); //创建线程去处理和客户端的连接
                 dealThread->detach();//线程自己管理生存周期
             }
@@ -251,7 +251,9 @@ void Server::dealItemMsg(const char *msg, int client)
         }
         else if(state_type == ITEM_END)
         {
-            if(_itemStates[_itemStates.size() - 1]["\"state_type\""] == ITEM_BEGIN)
+            const char *lastState = _itemStates[_itemStates.size() - 1]["\"state\""] .c_str();
+            Json::JsonObject lastStateJson = Json::toJsonObject(lastState);
+            if(lastStateJson["\"state_type\""]== ITEM_BEGIN)
             {
                 _itemStates.emplace_back(msgJson);
             }
