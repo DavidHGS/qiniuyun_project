@@ -11,6 +11,10 @@
    web前端模块——分支：david_branch
 
    运行说明：
+   
+   qt前端模块：在bin目录下有可执行的src.exe文件
+   
+   cpp后端：直接运行脚本run.sh即可
 
    
 
